@@ -4,7 +4,52 @@
 <h1>SignUp</h1>
 <form action="{% url "accounts:signup" %}" method="post">
   {% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit">
+  <div class="field">
+    <label for="username" class="label">Username</label>
+    <div class="control">
+      <input 
+        class="input"
+        type="text" 
+        placeholder="Username" 
+        name="username" 
+        maxlength="150"
+        autocapitalize="none"
+        autocomplete="username" 
+        autofocus 
+        required 
+        id="username" 
+      >
+    </div>
+  </div>
+  <div class="field">
+    <label for="password1">Password</label>
+    <div class="control">
+      <input 
+        class="input" 
+        type="password" 
+        name="password1" 
+        autocomplete="new-password" 
+        required 
+        id="password1"
+      >
+    </div>
+  </div>
+  <div class="field">
+    <label for="password2">Password Confirm</label>
+    <div class="control">
+      <input 
+      class="input" 
+      type="password" 
+      name="password2" 
+      autocomplete="new-password" 
+      required 
+      id="password2">
+    </div>
+  </div>
+  <div class="field is-grouped">
+    <div class="control">
+      <input class="input" type="submit">
+    </div>
+  </div>
 </form>
 {% endblock content %}
