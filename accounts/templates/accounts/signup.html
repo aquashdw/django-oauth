@@ -1,55 +1,59 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>SignUp</h1>
-<form action="{% url "accounts:signup" %}" method="post">
-  {% csrf_token %}
-  <div class="field">
-    <label for="username" class="label">Username</label>
-    <div class="control">
-      <input 
-        class="input"
-        type="text" 
-        placeholder="Username" 
-        name="username" 
-        maxlength="150"
-        autocapitalize="none"
-        autocomplete="username" 
-        autofocus 
-        required 
-        id="username" 
-      >
-    </div>
+<div class="colums">
+  <div class="column m-auto is-8 is-10-mobile">
+    <h1 class="is-size-1">SignUp</h1>
+    <form action="{% url "accounts:signup" %}" method="post">
+      {% csrf_token %}
+      <div class="field">
+        <label for="username" class="label is-size-4">Username</label>
+        <div class="control">
+          <input 
+            class="input"
+            type="text" 
+            placeholder="Username" 
+            name="username" 
+            maxlength="150"
+            autocapitalize="none"
+            autocomplete="username" 
+            autofocus 
+            required 
+            id="username" 
+          >
+        </div>
+      </div>
+      <div class="field">
+        <label for="password1" class="label is-size-4">Password</label>
+        <div class="control">
+          <input 
+            class="input" 
+            type="password" 
+            name="password1" 
+            autocomplete="new-password" 
+            required 
+            id="password1"
+          >
+        </div>
+      </div>
+      <div class="field">
+        <label for="password2" class="label is-size-4">Password Confirm</label>
+        <div class="control">
+          <input 
+          class="input" 
+          type="password" 
+          name="password2" 
+          autocomplete="new-password" 
+          required 
+          id="password2">
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <input class="input" type="submit">
+        </div>
+      </div>
+    </form>
   </div>
-  <div class="field">
-    <label for="password1">Password</label>
-    <div class="control">
-      <input 
-        class="input" 
-        type="password" 
-        name="password1" 
-        autocomplete="new-password" 
-        required 
-        id="password1"
-      >
-    </div>
-  </div>
-  <div class="field">
-    <label for="password2">Password Confirm</label>
-    <div class="control">
-      <input 
-      class="input" 
-      type="password" 
-      name="password2" 
-      autocomplete="new-password" 
-      required 
-      id="password2">
-    </div>
-  </div>
-  <div class="field is-grouped">
-    <div class="control">
-      <input class="input" type="submit">
-    </div>
-  </div>
-</form>
+</div>
 {% endblock content %}
