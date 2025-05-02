@@ -1,6 +1,9 @@
+from uuid import uuid4
 from urllib.parse import urlencode
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.views.decorators.http import require_safe
+from django.core.cache import cache
 
 from accounts.forms import CustomUserCreationForm
 
@@ -10,13 +13,18 @@ def index(request):
 
 
 def signup(request):
-    # return redirect(f'{base_url}?{params}')
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.is_active = False
-            # instance.save()
+            instance.save()
+            uuid = uuid4()
+            signup_token = f'auth-signup-token-{uuid}'
+            # TODO send this via email
+            print(f'{reverse("accounts:signup_confirm")}?{urlencode({"token": uuid})}')
+            cache.set(signup_token, instance, timeout=600)
+
             return redirect(f'{reverse("accounts:index")}?{urlencode({"success": "true"})}')
         
         base_url = reverse('accounts:signup')
@@ -42,6 +50,21 @@ def signup(request):
         'errors': request.GET.get('errors', '').split(','),
         'email': request.GET.get('email', None),
     }
-    print(context['errors'])
     
     return render(request, 'accounts/signup.html', context)
+
+
+@require_safe
+def signup_confirm(request):
+
+    token = request.GET.get('token')
+    if not token:
+        return redirect('accounts:login')
+    
+    signup_token = f'auth-signup-token-{token}'
+    instance = cache.get(signup_token)
+    instance.is_active = True
+    instance.save()
+    cache.delete(signup_token)
+
+    return redirect(f'{reverse("accounts:index")}?{urlencode({"success": "true"})}')
