@@ -7,21 +7,27 @@
     <form action="{% url "accounts:signup" %}" method="post">
       {% csrf_token %}
       <div class="field">
-        <label for="username" class="label is-size-4">Username</label>
+        <label for="email" class="label is-size-4">Email</label>
         <div class="control">
           <input 
             class="input"
-            type="text" 
-            placeholder="Username" 
-            name="username" 
+            type="email" 
+            placeholder="Email" 
+            name="email" 
             maxlength="150"
             autocapitalize="none"
             autocomplete="username" 
             autofocus 
             required 
-            id="username" 
+            id="email" 
+            value="{% if email %}{{email}}{% endif %}"
           >
         </div>
+        <p class="help is-danger">
+          {% if "duplicate_email" in errors %}
+          Email in use
+          {% endif %}
+        </p>
       </div>
       <div class="field">
         <label for="password1" class="label is-size-4">Password</label>
@@ -35,6 +41,13 @@
             id="password1"
           >
         </div>
+        <p class="help is-danger">
+          {% if "password_too_common" in errors %}
+          Password is too common
+          {% elif "password_mismatch" in errors %}
+          Passwords didn't match
+          {% endif %}
+        </p>
       </div>
       <div class="field">
         <label for="password2" class="label is-size-4">Password Confirm</label>
