@@ -14,11 +14,16 @@ def signup(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('accounts:index', success='true')
+            instance = form.save(commit=False)
+            instance.is_active = False
+            instance.save()
+            return redirect(f'{reverse("accounts:index")}?{urlencode({"success": "true"})}')
         
         base_url = reverse('accounts:signup')
-        params = urlencode({'errors': form.error_messages})
+        errors = {
+            'errors': ','.join(form.error_messages.keys())
+        }
+        params = urlencode(errors)
         return redirect(f'{base_url}?{params}')
     
     form = CustomUserCreationForm()
