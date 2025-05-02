@@ -97,6 +97,13 @@ CACHES = {
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
+RABBIT_HOST = ''
+RABBIT_PORT = 5672
+RABBIT_USER = 'user'
+RABBIT_PASSWORD = "password"
+RABBIT_QUEUE_NAME = "send_mail_queue"
+
+
 AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation

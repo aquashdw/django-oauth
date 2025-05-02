@@ -1,3 +1,4 @@
+
 from uuid import uuid4
 from urllib.parse import urlencode
 from django.shortcuts import redirect, render
@@ -6,6 +7,7 @@ from django.views.decorators.http import require_safe
 from django.core.cache import cache
 
 from accounts.forms import CustomUserCreationForm
+from accounts.rabbit import send_mail
 
 
 def index(request):
@@ -19,10 +21,12 @@ def signup(request):
             instance = form.save(commit=False)
             instance.is_active = False
             instance.save()
-            uuid = uuid4()
+            uuid = str(uuid4()).replace('-', '')
             signup_token = f'auth-signup-token-{uuid}'
             # TODO send this via email
-            print(f'{reverse("accounts:signup_confirm")}?{urlencode({"token": uuid})}')
+            link = f'{reverse("accounts:signup_confirm")}?{urlencode({"token": uuid})}'
+            send_mail(instance.email, 'Sign Up Request', f'<a href="{link}">Sign Up Link</a>')
+            
             cache.set(signup_token, instance, timeout=600)
 
             return redirect(f'{reverse("accounts:index")}?{urlencode({"success": "true"})}')
