@@ -3,7 +3,7 @@ from functools import wraps
 from django.shortcuts import redirect
 
 
-def require_anonymous(view_func):
+def anonymous(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated:

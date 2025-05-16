@@ -34,12 +34,19 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <a class="button is-primary" href="{% url "accounts:signup" %}">
-              <strong>Sign up</strong>
+            {% if user.is_authenticated %}
+            <form action="{% url 'accounts:signout' %}" method="post">
+              {% csrf_token %}
+              <input class="button is-primary" type="submit" value="Sign Out" />
+            </form>
+            {% else %}
+            <a class="button is-primary" href="{% url 'accounts:signup' %}">
+              Sign up
             </a>
-            <a class="button is-light" href="{% url "accounts:login" %}">
+            <a class="button is-primary" href="{% url 'accounts:login' %}">
               Log in
             </a>
+            {% endif %}
           </div>
         </div>
       </div>

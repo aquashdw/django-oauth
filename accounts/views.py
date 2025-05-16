@@ -11,14 +11,14 @@ from django.views.decorators.http import require_safe
 
 from accounts.forms import CustomUserCreationForm
 from accounts.rabbit import send_mail
-from accounts.utils import require_anonymous
+from accounts.utils import anonymous
 
 
 def index(request):
     return render(request, 'accounts/index.html')
 
 
-@require_anonymous
+@anonymous
 def signup(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -77,7 +77,7 @@ def signup_confirm(request):
 
 
 
-@require_anonymous
+@anonymous
 def signin(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, request.POST)
@@ -87,3 +87,11 @@ def signin(request):
 
         return redirect('accounts:login')
     return render(request, 'accounts/signin.html')
+
+
+@login_required
+def signout(request):
+    if request.method == 'POST':
+        logout(request)
+    return redirect('accounts:index')
+
