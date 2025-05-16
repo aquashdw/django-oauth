@@ -104,6 +104,7 @@ RABBIT_PASSWORD = "password"
 RABBIT_QUEUE_NAME = "send_mail_queue"
 
 
+LOGIN_URL = '/accounts/signin/'
 AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation

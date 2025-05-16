@@ -62,10 +62,9 @@ def signup(request):
 
 @require_safe
 def signup_confirm(request):
-
     token = request.GET.get('token')
     if not token:
-        return redirect('accounts:login')
+        return redirect('accounts:signin')
     
     signup_token = f'auth-signup-token-{token}'
     instance = cache.get(signup_token)
@@ -73,7 +72,7 @@ def signup_confirm(request):
     instance.save()
     cache.delete(signup_token)
 
-    return redirect(f'{reverse("accounts:index")}?{urlencode({"success": "true"})}')
+    return redirect(f'{reverse("accounts:index")}?{urlencode({"created": "true"})}')
 
 
 
@@ -85,7 +84,7 @@ def signin(request):
             login(request, form.get_user())
             return redirect('accounts:index')
 
-        return redirect('accounts:login')
+        return redirect('accounts:signin')
     return render(request, 'accounts/signin.html')
 
 
@@ -95,3 +94,7 @@ def signout(request):
         logout(request)
     return redirect('accounts:index')
 
+
+@login_required
+def my_profile(request):
+    return render(request, 'accounts/my-profile.html')

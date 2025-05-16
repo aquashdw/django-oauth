@@ -26,8 +26,8 @@
           Home
         </a>
   
-        <a class="navbar-item">
-          Documentation
+        <a class="navbar-item" href="{% url 'accounts:my_profile' %}">
+          Test
         </a>
       </div>
   
@@ -43,7 +43,7 @@
             <a class="button is-primary" href="{% url 'accounts:signup' %}">
               Sign up
             </a>
-            <a class="button is-primary" href="{% url 'accounts:login' %}">
+            <a class="button is-primary" href="{% url 'accounts:signin' %}">
               Log in
             </a>
             {% endif %}

@@ -4,7 +4,7 @@
 <div class="colums">
   <div class="column m-auto is-8 is-10-mobile">
     <h1 class="is-size-1">Sign In</h1>
-    <form action="{% url 'accounts:login' %}" method="post">
+    <form action="{% url 'accounts:signin' %}" method="post">
       {% csrf_token %}
       <div class="field">
         <label for="email" class="label is-size-4">Email</label>
