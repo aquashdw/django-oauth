@@ -11,7 +11,7 @@ from django.views.decorators.http import require_safe
 
 from accounts.forms import CustomUserCreationForm
 from accounts.rabbit import send_mail
-from accounts.utils import anonymous
+from accounts.utils import anonymous, extract_form_errors
 
 
 def index(request):
@@ -34,23 +34,14 @@ def signup(request):
             cache.set(signup_token, instance, timeout=600)
 
             return redirect(f'{reverse("accounts:index")}?{urlencode({"success": "true"})}')
-        
-        base_url = reverse('accounts:signup')
-        errors = []
-        error_data = form.errors.as_data()
-        for error_param in error_data:
-            param_errors = error_data[error_param]
-            for error in param_errors:
-                errors.append(error.code)         
 
-        errors = ','.join(errors)
+        errors = ','.join(extract_form_errors(form))
         email = form.data.get('email')
         params = {
             'errors': errors,
             'email': email,
         }
-        params = urlencode(params)
-        return redirect(f'{base_url}?{params}')
+        return redirect(f'{reverse("accounts:signup")}?{urlencode(params)}')
 
     context = {
         'errors': request.GET.get('errors', '').split(','),
@@ -83,8 +74,11 @@ def signin(request):
         if form.is_valid():
             login(request, form.get_user())
             return redirect('accounts:index')
-
-        return redirect('accounts:signin')
+        errors = ','.join(extract_form_errors(form))
+        params = {
+            'errors': errors,
+        }
+        return redirect(f'{reverse("accounts:signin")}?{urlencode(params)}')
     return render(request, 'accounts/signin.html')
 
 
