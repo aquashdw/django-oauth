@@ -3,13 +3,12 @@ from uuid import uuid4
 
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
 from django.core.cache import cache
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_safe
 
-from accounts.forms import CustomUserCreationForm
+from accounts.forms import UserCreationForm, AuthenticationForm
 from accounts.rabbit import send_mail
 from accounts.utils import anonymous, extract_form_errors
 
@@ -21,11 +20,9 @@ def index(request):
 @anonymous
 def signup(request):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
-            instance = form.save(commit=False)
-            instance.is_active = False
-            instance.save()
+            instance = form.save()
             uuid = str(uuid4()).replace('-', '')
             signup_token = f'auth-signup-token-{uuid}'
             link = f'{reverse("accounts:signup_confirm")}?{urlencode({"token": uuid})}'
@@ -59,7 +56,7 @@ def signup_confirm(request):
     
     signup_token = f'auth-signup-token-{token}'
     instance = cache.get(signup_token)
-    instance.is_active = True
+    instance.is_verified = True
     instance.save()
     cache.delete(signup_token)
 
