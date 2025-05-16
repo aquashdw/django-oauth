@@ -1,6 +1,9 @@
 from urllib.parse import urlencode
 from uuid import uuid4
 
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 from django.core.cache import cache
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -71,3 +74,16 @@ def signup_confirm(request):
     cache.delete(signup_token)
 
     return redirect(f'{reverse("accounts:index")}?{urlencode({"success": "true"})}')
+
+
+
+@require_anonymous
+def signin(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            return redirect('accounts:index')
+
+        return redirect('accounts:login')
+    return render(request, 'accounts/signin.html')

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="colums">
+  <div class="column m-auto is-8 is-10-mobile">
+    <h1 class="is-size-1">Sign In</h1>
+    <form action="{% url "accounts:login" %}" method="post">
+      {% csrf_token %}
+      <div class="field">
+        <label for="email" class="label is-size-4">Email</label>
+        <div class="control">
+          <input 
+            class="input"
+            type="email" 
+            placeholder="Email" 
+            name="username"
+            maxlength="150"
+            autocapitalize="none"
+            autocomplete="username" 
+            autofocus 
+            required 
+            id="email"
+          >
+        </div>
+      </div>
+      <div class="field">
+        <label for="password" class="label is-size-4">Password</label>
+        <div class="control">
+          <input 
+            class="input" 
+            type="password" 
+            name="password"
+            autocomplete="current-password"
+            required 
+            id="password"
+          >
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <input class="input" type="submit">
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}
