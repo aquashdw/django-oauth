@@ -4,7 +4,7 @@
 <div class="colums">
   <div class="column m-auto is-8 is-10-mobile">
     <h1 class="is-size-1">Sign In</h1>
-    <form action="{% url 'accounts:signin' %}" method="post">
+    <form method="post">
       {% csrf_token %}
       <div class="field">
         <label for="email" class="label is-size-4">Email</label>
@@ -28,14 +28,21 @@
         <div class="control">
           <input 
             class="input" 
-            type="password" 
+            type="password"
+            placeholder="Password"
             name="password"
             autocomplete="current-password"
-            required 
+            required
             id="password"
           >
         </div>
       </div>
+
+      {% if 'invalid_login' in errors %}
+      <p class="help is-danger is-size-6 mb-4">
+        Invalid Credentials. Check your email and password.
+      </p>
+      {% endif %}
       <div class="field is-grouped">
         <div class="control">
           <input class="input" type="submit">

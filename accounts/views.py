@@ -70,13 +70,21 @@ def signin(request):
         form = AuthenticationForm(request, request.POST)
         if form.is_valid():
             login(request, form.get_user())
-            return redirect('accounts:index')
-        errors = ','.join(extract_form_errors(form))
-        params = {
-            'errors': errors,
-        }
+            next_url = request.GET.get('next')
+            return redirect(next_url if next_url is not None else 'accounts:index')
+        errors = extract_form_errors(form)
+        params = {}
+        if 'not_verified' in errors:
+            params['email'] = form.get_user().email
+            return redirect(f'{reverse("accounts:index")}?{urlencode(params)}')
+
+        params['errors'] = ','.join(errors)
         return redirect(f'{reverse("accounts:signin")}?{urlencode(params)}')
-    return render(request, 'accounts/signin.html')
+
+    context = {
+        'errors': request.GET.get('errors', '').split(','),
+    }
+    return render(request, 'accounts/signin.html', context)
 
 
 @login_required
