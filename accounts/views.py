@@ -1,19 +1,21 @@
-
-from uuid import uuid4
 from urllib.parse import urlencode
+from uuid import uuid4
+
+from django.core.cache import cache
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_safe
-from django.core.cache import cache
 
 from accounts.forms import CustomUserCreationForm
 from accounts.rabbit import send_mail
+from accounts.utils import require_anonymous
 
 
 def index(request):
     return render(request, 'accounts/index.html')
 
 
+@require_anonymous
 def signup(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -23,7 +25,6 @@ def signup(request):
             instance.save()
             uuid = str(uuid4()).replace('-', '')
             signup_token = f'auth-signup-token-{uuid}'
-            # TODO send this via email
             link = f'{reverse("accounts:signup_confirm")}?{urlencode({"token": uuid})}'
             send_mail(instance.email, 'Sign Up Request', f'<a href="{link}">Sign Up Link</a>')
             
@@ -47,10 +48,8 @@ def signup(request):
         }
         params = urlencode(params)
         return redirect(f'{base_url}?{params}')
-    
-    form = CustomUserCreationForm()
+
     context = {
-        'form': form,
         'errors': request.GET.get('errors', '').split(','),
         'email': request.GET.get('email', None),
     }
