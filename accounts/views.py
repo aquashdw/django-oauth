@@ -30,7 +30,7 @@ def signup(request):
             
             cache.set(signup_token, instance, timeout=600)
 
-            return redirect(f'{reverse("accounts:index")}?{urlencode({"success": "true"})}')
+            return redirect('accounts:verify')
 
         errors = ','.join(extract_form_errors(form))
         email = form.data.get('email')
@@ -76,7 +76,7 @@ def signin(request):
         params = {}
         if 'not_verified' in errors:
             params['email'] = form.get_user().email
-            return redirect(f'{reverse("accounts:index")}?{urlencode(params)}')
+            return redirect('accounts:verify')
 
         params['errors'] = ','.join(errors)
         return redirect(f'{reverse("accounts:signin")}?{urlencode(params)}')
@@ -97,3 +97,8 @@ def signout(request):
 @login_required
 def my_profile(request):
     return render(request, 'accounts/my-profile.html')
+
+
+@anonymous
+def verify_request(request):
+    return render(request, 'accounts/verify.html')

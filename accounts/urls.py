@@ -10,5 +10,6 @@ urlpatterns = [
     path('signin/', views.signin, name='signin'),
     path('signout/', views.signout, name='signout'),
     path('me/', views.my_profile, name='my_profile'),
+    path('verify/', views.verify_request, name='verify'),
     # path('profile/<username>/', views.profile, name='profile'),
 ]
