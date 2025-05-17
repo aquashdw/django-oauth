@@ -4,7 +4,7 @@
 <div class="colums">
   <div class="column m-auto is-8 is-10-mobile">
     <h1>Sign Up</h1>
-    <form action="{% url 'accounts:signup' %}" method="post">
+    <form method="post">
       {% csrf_token %}
       <div class="field">
         <label for="email" class="label is-size-4">Email</label>
@@ -72,11 +72,3 @@
   </div>
 </div>
 {% endblock content %}
-{% block script %}
-<script>
-  if (next) {
-    const form = document.querySelector('form');
-    form.action += `?next=${encodeURIComponent(next)}`
-  }
-</script>
-{% endblock script %}

@@ -20,16 +20,16 @@ def index(request):
 @anonymous
 def signup(request):
     if request.method == 'POST':
+        params = {}
+        if request.GET.get('next'):
+            params['next'] = request.GET.get('next')
+
         form = UserCreationForm(request.POST)
         if form.is_valid():
             instance = form.save()
             uuid = str(uuid4()).replace('-', '')
             signup_token = f'auth-signup-token-{uuid}'
-            params = {
-                'token': uuid,
-            }
-            if request.GET.get('next'):
-                params['next'] = request.GET.get('next')
+            params['token'] = uuid
             link = f'{reverse("accounts:signup_confirm")}?{urlencode(params)}'
             send_mail(instance.email, 'Sign Up Request', f'<a href="{link}">Sign Up Link</a>')
             
@@ -37,12 +37,8 @@ def signup(request):
 
             return redirect_with_nq('accounts:verify', {'created': 'true'})
 
-        errors = ','.join(extract_form_errors(form))
-        email = form.data.get('email')
-        params = {
-            'errors': errors,
-            'email': email,
-        }
+        params['errors'] = ','.join(extract_form_errors(form))
+        params['email'] = form.data.get('email')
         return redirect_with_nq('accounts:signup', params)
 
     context = {
@@ -81,15 +77,17 @@ def signin(request):
         if form.is_valid():
             login(request, form.get_user())
             return redirect(next_url if next_url is not None else 'accounts:index')
-        errors = extract_form_errors(form)
+
         params = {}
+        if next_url:
+            params['next'] = next_url
+
+        errors = extract_form_errors(form)
         if 'not_verified' in errors:
             params['email'] = form.get_user().email
             return redirect('accounts:verify')
 
         params['errors'] = ','.join(errors)
-        if next_url:
-            params['next'] = next_url
         return redirect_with_nq('accounts:signin', params)
 
     context = {
