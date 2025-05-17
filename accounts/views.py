@@ -77,9 +77,9 @@ def signup_confirm(request):
 def signin(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, request.POST)
+        next_url = request.GET.get('next')
         if form.is_valid():
             login(request, form.get_user())
-            next_url = request.GET.get('next')
             return redirect(next_url if next_url is not None else 'accounts:index')
         errors = extract_form_errors(form)
         params = {}
@@ -88,11 +88,15 @@ def signin(request):
             return redirect('accounts:verify')
 
         params['errors'] = ','.join(errors)
+        if next_url:
+            params['next'] = next_url
         return redirect_with_nq('accounts:signin', params)
 
     context = {
         'errors': request.GET.get('errors', '').split(','),
     }
+    if request.GET.get('created') == 'true':
+        context['created'] = True
     return render(request, 'accounts/signin.html', context)
 
 
@@ -110,4 +114,7 @@ def my_profile(request):
 
 @anonymous
 def verify_request(request):
-    return render(request, 'accounts/verify.html')
+    context = {}
+    if request.GET.get('created') == 'true':
+        context['created'] = True
+    return render(request, 'accounts/verify.html', context)

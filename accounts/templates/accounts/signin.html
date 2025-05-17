@@ -43,6 +43,11 @@
         Invalid Credentials. Check your email and password.
       </p>
       {% endif %}
+      {% if created %}
+      <p class="help is-success is-size-6 mb-4">
+        Your account is now verified
+      </p>
+      {% endif %}
       <div class="field is-grouped">
         <div class="control">
           <input class="input is-clickable" type="submit">

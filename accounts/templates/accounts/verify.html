@@ -4,6 +4,7 @@
 <section class="m-3 box hero is-halfheight is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
   <h1 class="block">Your Account needs Verification</h1>
   <p class="block">Please check your inbox. We have sent an email to verify the address you gave us is actually yours.</p>
+  {% if created %}
   <form>
     <p>If you want us to send the email again, enter your address below:</p>
     <div class="field">
@@ -28,5 +29,6 @@
       </div>
     </div>
   </form>
+  {% endif %}
 </section>
 {% endblock content %}
