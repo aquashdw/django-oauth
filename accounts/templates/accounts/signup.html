@@ -72,3 +72,11 @@
   </div>
 </div>
 {% endblock content %}
+{% block script %}
+<script>
+  if (next) {
+    const form = document.querySelector('form');
+    form.action += `?next=${encodeURIComponent(next)}`
+  }
+</script>
+{% endblock script %}

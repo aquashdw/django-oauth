@@ -25,7 +25,12 @@ def signup(request):
             instance = form.save()
             uuid = str(uuid4()).replace('-', '')
             signup_token = f'auth-signup-token-{uuid}'
-            link = f'{reverse("accounts:signup_confirm")}?{urlencode({"token": uuid})}'
+            params = {
+                'token': uuid,
+            }
+            if request.GET.get('next'):
+                params['next'] = request.GET.get('next')
+            link = f'{reverse("accounts:signup_confirm")}?{urlencode(params)}'
             send_mail(instance.email, 'Sign Up Request', f'<a href="{link}">Sign Up Link</a>')
             
             cache.set(signup_token, instance, timeout=600)
@@ -59,8 +64,13 @@ def signup_confirm(request):
     instance.is_verified = True
     instance.save()
     cache.delete(signup_token)
+    params = {
+        'created': 'true',
+    }
+    if request.GET.get('next'):
+        params['next'] = request.GET.get('next')
 
-    return redirect_with_nq('accounts:signin', {'created': 'true'})
+    return redirect_with_nq('accounts:signin', params)
 
 
 @anonymous

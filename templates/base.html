@@ -40,10 +40,10 @@
               <input class="button is-primary" type="submit" value="Sign Out" />
             </form>
             {% else %}
-            <a class="button is-primary" href="{% url 'accounts:signup' %}">
+            <a id="signin-link" class="button is-primary" href="{% url 'accounts:signup' %}">
               Sign up
             </a>
-            <a class="button is-primary" href="{% url 'accounts:signin' %}">
+            <a id="signup-link" class="button is-primary" href="{% url 'accounts:signin' %}">
               Sign in
             </a>
             {% endif %}
@@ -82,5 +82,20 @@
       });
     });
   </script>
+  {% comment %} preserve next {% endcomment %}
+  <script>
+    const urlParams = new URLSearchParams(location.search);
+    const next = urlParams.get('next');
+    if (next) {
+      const signupLink = document.getElementById('signup-link');
+      signupLink.href += `?next=${encodeURIComponent(next)}`;
+      const signinLink = document.getElementById('signin-link');
+      signinLink.href += `?next=${encodeURIComponent(next)}`;
+    }
+  </script>
+  {% comment %} other template scripts {% endcomment %}
+  {% block script %}
+  {% endblock script %}
+  
 </body>
 </html>
