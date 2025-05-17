@@ -22,7 +22,7 @@
     </div>
     <div id="navbar" class="navbar-menu">
       <div class="navbar-start">
-        <a class="navbar-item">
+        <a class="navbar-item" href="/">
           Home
         </a>
   
@@ -54,9 +54,9 @@
   </nav>
   
   
-  <main class="container is-max-desktop">
+  <main class="container content is-max-desktop">
     {% block content %}
-    <div class="box">{% templatetag openblock %} block content {% templatetag closeblock %}</div>
+    <div>{% templatetag openblock %} block content {% templatetag closeblock %}</div>
     {% endblock content %}
   </main>
   {% comment %} navbar script {% endcomment %}
