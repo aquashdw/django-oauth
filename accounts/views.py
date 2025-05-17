@@ -85,7 +85,7 @@ def signin(request):
         errors = extract_form_errors(form)
         if 'not_verified' in errors:
             params['email'] = form.get_user().email
-            return redirect('accounts:verify')
+            return redirect_with_nq('accounts:verify', params)
 
         params['errors'] = ','.join(errors)
         return redirect_with_nq('accounts:signin', params)
@@ -115,4 +115,5 @@ def verify_request(request):
     context = {}
     if request.GET.get('created') == 'true':
         context['created'] = True
+    context['email'] = request.GET.get('email')
     return render(request, 'accounts/verify.html', context)

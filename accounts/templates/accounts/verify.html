@@ -1,10 +1,40 @@
 {% extends 'base.html' %}
-
+{% block head %}
+<style>
+  input.has-text-link {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+  }
+</style>
+{% endblock head %}
 {% block content %}
 <section class="m-3 box hero is-halfheight is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
   <h1 class="block">Your Account needs Verification</h1>
   <p class="block">Please check your inbox. We have sent an email to verify the address you gave us is actually yours.</p>
-  {% if created %}
+  {% if email %}
+  <form>
+    <p>If you want us to send the email again, click <input class="has-text-link is-clickable" type="submit" value="here"></p>  
+    <div class="is-hidden">
+      <div class="control">
+        <input
+          class="input"
+          type="email"
+          placeholder="Email"
+          name="username"
+          maxlength="150"
+          autocapitalize="none"
+          autocomplete="username"
+          autofocus
+          required
+          id="email"
+        >
+      </div>
+    </div>
+  </form>
+  {% elif not created %}
   <form>
     <p>If you want us to send the email again, enter your address below:</p>
     <div class="field">
