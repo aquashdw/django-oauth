@@ -10,7 +10,7 @@ from django.views.decorators.http import require_safe
 
 from accounts.forms import UserCreationForm, AuthenticationForm
 from accounts.rabbit import send_mail
-from accounts.utils import anonymous, extract_form_errors
+from accounts.utils import anonymous, extract_form_errors, redirect_with_nq
 
 
 def index(request):
@@ -30,7 +30,7 @@ def signup(request):
             
             cache.set(signup_token, instance, timeout=600)
 
-            return redirect('accounts:verify')
+            return redirect_with_nq('accounts:verify', {'created': 'true'})
 
         errors = ','.join(extract_form_errors(form))
         email = form.data.get('email')
@@ -38,7 +38,7 @@ def signup(request):
             'errors': errors,
             'email': email,
         }
-        return redirect(f'{reverse("accounts:signup")}?{urlencode(params)}')
+        return redirect_with_nq('accounts:signup', params)
 
     context = {
         'errors': request.GET.get('errors', '').split(','),
@@ -60,8 +60,7 @@ def signup_confirm(request):
     instance.save()
     cache.delete(signup_token)
 
-    return redirect(f'{reverse("accounts:index")}?{urlencode({"created": "true"})}')
-
+    return redirect_with_nq('accounts:signin', {'created': 'true'})
 
 
 @anonymous
@@ -79,7 +78,7 @@ def signin(request):
             return redirect('accounts:verify')
 
         params['errors'] = ','.join(errors)
-        return redirect(f'{reverse("accounts:signin")}?{urlencode(params)}')
+        return redirect_with_nq('accounts:signin', params)
 
     context = {
         'errors': request.GET.get('errors', '').split(','),

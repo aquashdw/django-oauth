@@ -1,7 +1,10 @@
+from urllib.parse import urlencode
 from functools import wraps
 
 from django.forms import BaseForm
 from django.shortcuts import redirect
+from django.urls import reverse
+
 
 def extract_form_errors(form: BaseForm):
     errors = []
@@ -22,3 +25,10 @@ def anonymous(view_func):
         return view_func(request, *args, **kwargs)
 
     return _wrapped_view
+
+
+def redirect_with_nq(url_name, query, *args, **kwargs):
+    query = query or {}
+    args = args or []
+    kwargs = kwargs or {}
+    return redirect(f'{reverse(url_name, args=args, kwargs=kwargs)}?{urlencode(query)}')

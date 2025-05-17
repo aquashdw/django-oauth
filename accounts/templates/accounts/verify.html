@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="m-3 box hero is-halfheight is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
+  <h1 class="block">Your Account needs Verification</h1>
+  <p class="block">Please check your inbox. We have sent an email to verify the address you gave us is actually yours.</p>
+  <form>
+    <p>If you want us to send the email again, enter your address below:</p>
+    <div class="field">
+      <div class="control">
+        <input
+          class="input"
+          type="email"
+          placeholder="Email"
+          name="username"
+          maxlength="150"
+          autocapitalize="none"
+          autocomplete="username"
+          autofocus
+          required
+          id="email"
+        >
+      </div>
+    </div>
+    <div class="field is-grouped">
+      <div class="control">
+        <input class="input is-clickable" type="submit">
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock content %}
