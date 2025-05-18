@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_safe
 
-from accounts.forms import UserCreationForm, AuthenticationForm
+from accounts.forms import UserCreationForm, AuthenticationForm, SendVerificationForm
 from accounts.rabbit import send_mail
 from accounts.utils import anonymous, extract_form_errors, redirect_with_nq
 
@@ -112,8 +112,29 @@ def my_profile(request):
 
 @anonymous
 def verify_request(request):
+    if request.method == 'POST':
+        form = SendVerificationForm(request.POST)
+        if form.is_valid():
+            user = form.user
+            uuid = str(uuid4()).replace('-', '')
+            signup_token = f'auth-signup-token-{uuid}'
+            params = {
+                'token': uuid
+            }
+            link = f'{reverse("accounts:signup_confirm")}?{urlencode(params)}'
+            send_mail(user.email, 'Sign Up Request', f'<a href="{link}">Sign Up Link</a>')
+
+            cache.set(signup_token, user, timeout=600)
+
+            return redirect_with_nq('accounts:verify', {'resent': 'true', 'email': user.email})
+
+        return redirect('/400')
+
     context = {}
     if request.GET.get('created') == 'true':
         context['created'] = True
+    if request.GET.get('resent') == 'true':
+        context['resent'] = True
     context['email'] = request.GET.get('email')
+
     return render(request, 'accounts/verify.html', context)

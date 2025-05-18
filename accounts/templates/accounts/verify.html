@@ -30,6 +30,7 @@
           autofocus
           required
           id="email"
+          value="{{ email }}"
         >
       </div>
     </div>
@@ -60,5 +61,18 @@
     </div>
   </form>
   {% endif %}
+  {% if resent %}
+    <p id="message" class="help is-success is-size-6 mb-4">
+      Verification email resent
+    </p>
+    {% endif %}
 </section>
 {% endblock content %}
+{% comment %} {% block script %}
+<script>
+  const message = document.getElementById('message')
+  if (message) setTimeout(() => {
+    message.classList.add('is-hidden')
+  }, 3000)
+</script>
+{% endblock script %} {% endcomment %}

@@ -1,4 +1,7 @@
-from django.contrib.auth import get_user_model, authenticate
+from distutils.command.clean import clean
+
+from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm as _AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm as _UserCreationForm
 from django.forms import ValidationError
@@ -28,3 +31,20 @@ class AuthenticationForm(_AuthenticationForm):
             raise ValidationError('user is not verified', code='not_verified')
 
         return cleaned_data
+
+
+class SendVerificationForm(forms.Form):
+    username = forms.EmailField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.user = None
+
+    def clean_username(self):
+        email = self.cleaned_data.get('username')
+        user = User.objects.filter(email__iexact=email).first()
+        if not user:
+            raise ValidationError('not an issued email', code='not_found')
+
+        self.user = user
+        return self.cleaned_data
