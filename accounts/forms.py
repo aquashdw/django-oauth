@@ -1,10 +1,9 @@
-from distutils.command.clean import clean
-
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm as _AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm as _UserCreationForm
 from django.forms import ValidationError
+from django.forms.utils import ErrorList
 
 User = get_user_model()
 class UserCreationForm(_UserCreationForm):
@@ -36,8 +35,22 @@ class AuthenticationForm(_AuthenticationForm):
 class SendVerificationForm(forms.Form):
     username = forms.EmailField()
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)
+    def __init__(
+            self,
+            data=None,
+            files=None,
+            auto_id="id_%s",
+            prefix=None,
+            initial=None,
+            error_class=ErrorList,
+            label_suffix=None,
+            empty_permitted=False,
+            field_order=None,
+            use_required_attribute=None,
+            renderer=None,
+    ):
+        super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, field_order,
+                         use_required_attribute, renderer)
         self.user = None
 
     def clean_username(self):
@@ -47,4 +60,4 @@ class SendVerificationForm(forms.Form):
             raise ValidationError('not an issued email', code='not_found')
 
         self.user = user
-        return self.cleaned_data
+        return email
