@@ -5,9 +5,11 @@ from django.db import models
 class OAuthClient(models.Model):
     DEVELOPMENT = 'DEV'
     PRODUCTION = 'PROD'
+    DELETED = 'DEL'
     STATUS_CHOICES = [
         (DEVELOPMENT, 'Development'),
         (PRODUCTION, 'Production'),
+        (DELETED, 'Deleted'),
     ]
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -17,6 +19,11 @@ class OAuthClient(models.Model):
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, default=DEVELOPMENT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        permissions = [
+            ('oauth_active', 'Can use oauth features'),
+        ]
 
 
 class CallbackUrl(models.Model):

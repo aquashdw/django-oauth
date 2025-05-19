@@ -9,5 +9,6 @@ urlpatterns = [
     path('create/', views.create_client, name='create'),
     path('<int:pk>/', views.read_client, name='read'),
     path('<int:pk>/update/', views.update_client, name='update'),
-    path('<int:pk>/delete/', views.delete_client, name='delete')
+    path('<int:pk>/delete/', views.delete_client, name='delete'),
+    path('deactivate/', views.deactivate, name='deactivate'),
 ]

@@ -1,6 +1,7 @@
 from urllib.parse import urlencode
 from functools import wraps
 
+from django.contrib.auth.models import Permission
 from django.forms import BaseForm
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -32,3 +33,7 @@ def redirect_with_nq(url_name, query, *args, **kwargs):
     args = args or []
     kwargs = kwargs or {}
     return redirect(f'{reverse(url_name, args=args, kwargs=kwargs)}?{urlencode(query)}')
+
+
+def get_perm(codename):
+    return Permission.objects.get(codename=codename)

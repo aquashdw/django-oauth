@@ -97,6 +97,20 @@
       signinLink.href += `?next=${encodeURIComponent(next)}`;
     }
   </script>
+  {% comment %} button hovers {% endcomment %}
+  <script>
+    const buttons = document.querySelectorAll('.button')
+    buttons.forEach(button => button.addEventListener('mouseenter', (event) => {
+      event.target.classList.add('is-hovered')
+      event.target.classList.add('is-focused')
+    }))
+    buttons.forEach(button => button.addEventListener('mouseleave', (event) => {
+      event.target.classList.remove('is-hovered')
+      event.target.classList.remove('is-focused')
+    }))
+    
+  </script>
+
   {% comment %} other template scripts {% endcomment %}
   {% block script %}
   {% endblock script %}
