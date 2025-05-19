@@ -10,7 +10,7 @@ from django.views.decorators.http import require_safe
 
 from accounts.forms import UserCreationForm, AuthenticationForm, SendVerificationForm
 from accounts.rabbit import send_mail
-from accounts.utils import anonymous, extract_form_errors, redirect_with_nq
+from django_oauth.utils import anonymous, extract_form_errors, redirect_with_nq
 
 
 def index(request):
