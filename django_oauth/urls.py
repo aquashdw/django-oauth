@@ -21,5 +21,6 @@ from django.shortcuts import redirect
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('oauth/', include('oauth.urls')),
     path('', lambda _: redirect('accounts:index')),
 ]
