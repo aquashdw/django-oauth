@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from django.contrib.auth.decorators import permission_required, login_required
+from django.db.models import Prefetch
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_safe
@@ -64,7 +65,13 @@ def create_client(request):
 
 # read one client
 def read_client(request, pk):
-    client = get_object_or_404(OAuthClient, pk=pk)
+    client = get_object_or_404(OAuthClient.objects.prefetch_related(
+            'test_users',
+            Prefetch('callback_urls'),
+        ),
+        pk=pk
+    )
+
     if (client.status == OAuthClient.DELETED or
             client.owner != request.user):
         raise Http404

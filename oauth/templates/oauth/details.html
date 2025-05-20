@@ -1,16 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="section block px-6">
+<section class="block mt-6 px-6">
   <div class="level is-mobile">
     <div class="level-left">
-       <h1 class="level-item title is-1">{{ client.name }}</h1>
+      <div class="level-item">
+        <p class="title is-1">{{ client.name }}</p>
+      </div>
+      <div class="level-item">
+        <button class="tag is-info">Rename</button>
+      </div>
     </div>
     <div class="level-right"><a href="{% url 'oauth:index' %}">Back</a></div>
   </div>
   <p class="subtitle">Status: <span class="tag is-warning">{{ client.get_status_display }}</span></p>
 </section>
-<div class="columns">
+<hr>
+<section class="columns">
   <div class="column">
     <section class="mx-5 has-text-centered">
       <h2 class="title mb-2">Callback URLs</h2>
@@ -25,14 +31,14 @@
           </div>
         </div>
       </form>
-      {% if urls %}
+      {% if client.callback_urls|length %}
       <table class="table has-text-centered">
         <thead>
           <th>Callback URLs</th>
           <td>Action</td>
         </thead>
         <tbody>
-          {% for url in urls %}
+          {% for url in client.callback_urls.all %}
           <tr>
             <td>{{ url }}</td>
             <td><button class="tag is-danger">Delete</button></td>
@@ -46,13 +52,12 @@
     </section>
   </div>
   <div class="column">
-    {% comment %} dummy content {% endcomment %}
-    <section class="mx-5">
-      <h2 class="title mb-2">Callback URLs</h2>
-      <p class="subtitle">URLs to notify user's approval</p>
+    <section class="mx-5 has-text-centered">
+      <h2 class="title mb-2">Testers</h2>
+      <p class="subtitle">Users allowed before open</p>
       <form class="mb-3">
         <div class="field has-addons">
-          <div class="control">
+          <div class="control is-expanded">
             <input class="input" type="url" name="url" required>
           </div>
           <div class="control">
@@ -60,19 +65,29 @@
           </div>
         </div>
       </form>
+      {% if client.test_users|length %}
       <table class="table has-text-centered">
         <thead>
-          <th>Callback URLs</th>
+          <th>Testers</th>
           <td>Action</td>
         </thead>
         <tbody>
+          {% for tester in test_users %}
           <tr>
-            <td>http://test.domain.io/callback</td>
-            <td><button class="tag is-danger">Delete</button></td>
+            <td>{{ tester.email }}</td>
+            <td><button class="tag is-danger">Remove</button></td>
           </tr>
+          {% endfor %}
         </tbody>
       </table>
+      {% else %}
+      <p class="is-size-5 has-text-warning">No testers invited</h3>
+      {% endif %}
     </section>
   </div>
-</div>
+</section>
+<hr>
+<section class="block px-6">
+  <a class="button is-clickable is-danger" href="{% url 'oauth:delete' client.pk %}">Delete</a>
+</section>
 {% endblock content %}
