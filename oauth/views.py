@@ -1,10 +1,11 @@
 from uuid import uuid4
 
 from django.contrib.auth.decorators import permission_required, login_required
+from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.http import require_safe
+from django.views.decorators.http import require_safe, require_POST
 
 from django_oauth.utils import get_perm, redirect_with_nq, extract_form_errors
 from oauth.forms import OAuthClientForm
@@ -13,7 +14,7 @@ from oauth.models import OAuthClient
 OAUTH_CODENAME = 'oauth_active'
 OAUTH_LOOKUP_NAME = 'oauth.oauth_active'
 
-# activate
+
 @login_required
 def activate(request):
     if request.user.has_perm(OAUTH_LOOKUP_NAME):
@@ -27,7 +28,6 @@ def activate(request):
     return render(request, 'oauth/activate.html')
 
 
-# dashboard (read clients)
 @require_safe
 @permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
 def index(request):
@@ -63,7 +63,7 @@ def create_client(request):
     return render(request, 'oauth/create.html', context)
 
 
-# read one client
+@require_safe
 def read_client(request, pk):
     client = get_object_or_404(OAuthClient.objects.prefetch_related(
             'test_users',
@@ -82,9 +82,20 @@ def read_client(request, pk):
     return render(request, 'oauth/details.html', context)
 
 
-# update client
-def update_client(request):
-    pass
+@require_POST
+def update_client(request, pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if request.user != client.owner:
+        raise PermissionDenied
+    form = OAuthClientForm(request.POST, instance=client)
+    if form.is_valid():
+        form.save()
+        return redirect_with_nq('oauth:read', {'rename': 'true'}, pk)
+
+    params = {
+        'errors': 'clientname',
+    }
+    return redirect_with_nq('oauth:read', params, pk)
 
 
 # remove client

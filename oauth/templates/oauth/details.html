@@ -5,10 +5,10 @@
   <div class="level is-mobile">
     <div class="level-left">
       <div class="level-item">
-        <p class="title is-1">{{ client.name }}</p>
-      </div>
-      <div class="level-item">
-        <button class="tag is-info" id="modal-open-button">Rename</button>
+        <div>
+          <p class="title is-1">{{ client.name }} <button class="tag is-info" id="modal-open-button">Rename</button></p>
+          <p id="rename-result-msg" class="subtitle is-6 is-invisible">&nbsp;</p>
+        </div>
       </div>
     </div>
     <div class="level-right">
@@ -110,7 +110,8 @@
         </div>
       </div>
       
-      <form class="mb-3">
+      <form class="mb-3" action="{% url 'oauth:update' client.pk %}" method="post">
+        {% csrf_token %}
         <div class="field has-addons">
           <div class="control is-expanded">
             <input class="input" type="text" name="name" required>
@@ -135,8 +136,6 @@ const openModal = () => modal.classList.add('is-active')
 const closeModal = () => modal.classList.remove('is-active')
 
 document.getElementById('modal-open-button').addEventListener('click', openModal)
-
-
 document.querySelector('.modal-background').addEventListener('click', closeModal)
 document.getElementById('modal-close-button').addEventListener('click', closeModal)
 document.addEventListener('keydown', (event) => {
@@ -144,6 +143,18 @@ document.addEventListener('keydown', (event) => {
     closeModal();
   }
 });
+
+const renameSuccess = urlParams.get('rename')
+const error = urlParams.get('errors')
+if (renameSuccess || error === 'clientname') {
+  const renameResultMsg = document.getElementById('rename-result-msg')
+  renameResultMsg.innerText = renameSuccess ? 'Rename Success!!!' : 'Rename Failed.'
+  renameResultMsg.classList.toggle(renameSuccess ? 'has-text-success' : 'has-text-danger')
+  renameResultMsg.classList.toggle('is-invisible')
+  setTimeout(() => {
+    renameResultMsg.classList.toggle('is-invisible')
+  }, 3000)
+}
 
 </script>
 {% endblock script %}

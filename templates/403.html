@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="m-3 hero box is-medium has-text-centered">
+  <div class="hero-body">
+    <p class="title is-1">403</p>
+    <p class="subtitle">You are not allowed to perform that action.</p>
+     <a id="back-link">Go back</a>
+  </div>
+</section>
+{% endblock content %}
+
+{% block script %}
+<script>
+  document.getElementById('back-link').addEventListener('click', () => {
+    const referrer = document.referrer
+    if (referrer) {
+      location.assign(referrer)
+    } else {
+      location.assign("{% url 'accounts:index' %}")
+    }
+  })
+</script>
+{% endblock script %}
