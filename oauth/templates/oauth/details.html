@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="section block">
-  <div class="level">
+<section class="section block px-6">
+  <div class="level is-mobile">
     <div class="level-left">
        <h1 class="level-item title is-1">{{ client.name }}</h1>
     </div>
@@ -10,5 +10,69 @@
   </div>
   <p class="subtitle">Status: <span class="tag is-warning">{{ client.get_status_display }}</span></p>
 </section>
-<hr>
+<div class="columns">
+  <div class="column">
+    <section class="mx-5 has-text-centered">
+      <h2 class="title mb-2">Callback URLs</h2>
+      <p class="subtitle">URLs to notify user's approval</p>
+      <form class="mb-3">
+        <div class="field has-addons">
+          <div class="control is-expanded">
+            <input class="input" type="url" name="url" required>
+          </div>
+          <div class="control">
+            <button class="button is-info">Add</button>
+          </div>
+        </div>
+      </form>
+      {% if urls %}
+      <table class="table has-text-centered">
+        <thead>
+          <th>Callback URLs</th>
+          <td>Action</td>
+        </thead>
+        <tbody>
+          {% for url in urls %}
+          <tr>
+            <td>{{ url }}</td>
+            <td><button class="tag is-danger">Delete</button></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="is-size-5 has-text-warning">No Callback URLs set</h3>
+      {% endif %}
+    </section>
+  </div>
+  <div class="column">
+    {% comment %} dummy content {% endcomment %}
+    <section class="mx-5">
+      <h2 class="title mb-2">Callback URLs</h2>
+      <p class="subtitle">URLs to notify user's approval</p>
+      <form class="mb-3">
+        <div class="field has-addons">
+          <div class="control">
+            <input class="input" type="url" name="url" required>
+          </div>
+          <div class="control">
+            <button class="button is-info">Add</button>
+          </div>
+        </div>
+      </form>
+      <table class="table has-text-centered">
+        <thead>
+          <th>Callback URLs</th>
+          <td>Action</td>
+        </thead>
+        <tbody>
+          <tr>
+            <td>http://test.domain.io/callback</td>
+            <td><button class="tag is-danger">Delete</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</div>
 {% endblock content %}
