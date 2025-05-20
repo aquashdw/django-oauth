@@ -1,8 +1,44 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="m-4 p-6 block">
-  <a class="button is-clickable is-success" href="{% url 'oauth:create' %}">Create</a>
-  <a class="button is-clickable is-danger" href="{% url 'oauth:deactivate' %}">Opt out</a>
+<section class="section block">
+  <h1 class="title">Your OAuth clients</h1>
+  <p class="subtitle">These applications can use our user information</p>
+  <div>
+    <a class="button is-clickable is-success" href="{% url 'oauth:create' %}">Create</a>
+    <a class="button is-clickable is-danger" href="{% url 'oauth:deactivate' %}">Opt out</a>
+  </div>
+</section>
+<hr>
+<section class="section table-container">
+  <table class="table is-hoverable is-fullwidth has-text-centered">
+    <thead>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Client ID</th>
+      <th>Client Secret</th>
+    </thead>
+    <tbody>
+      {% for client in clients %}
+      <tr>
+        <th><a href="">{{ client.name }}</a></th>
+        <td>{{ client.get_status_display }}</td>
+        <td><code>{{ client.client_id }}</code> <button data-dj-value="{{ client.client_id }}" class="copy-btn tag">Copy</button></td>
+        <td><button data-dj-value="{{ client.client_secret }}" class="copy-btn tag">Copy</button></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </section>
 {% endblock content %}
+{% block script %}
+<script>
+document.querySelectorAll('.copy-btn').forEach(button => button.addEventListener('click', (event) => {
+  navigator.clipboard.writeText(event.target.dataset.djValue)
+  event.target.innerText = 'Copied!'
+  setTimeout(() => {
+    event.target.innerText = 'Copy'
+  }, 3000)
+}))
+</script>
+{% endblock script %}

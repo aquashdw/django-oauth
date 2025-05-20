@@ -2,9 +2,11 @@ from uuid import uuid4
 
 from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_safe
 
 from django_oauth.utils import get_perm, redirect_with_nq, extract_form_errors
 from oauth.forms import OAuthClientForm
+from oauth.models import OAuthClient
 
 OAUTH_CODENAME = 'oauth_active'
 OAUTH_LOOKUP_NAME = 'oauth.oauth_active'
@@ -24,9 +26,15 @@ def activate(request):
 
 
 # dashboard (read clients)
+@require_safe
 @permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
 def index(request):
-    return render(request, 'oauth/index.html')
+    clients = OAuthClient.objects.filter(owner=request.user)
+    context = {
+        'clients': clients,
+    }
+
+    return render(request, 'oauth/index.html', context)
 
 
 @permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
