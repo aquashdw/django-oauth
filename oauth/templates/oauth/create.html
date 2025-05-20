@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="m-4 section box">
+  <h1 class="title">Create New Client</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <label for="name" class="label is-size-5">Client Name</label>
+      <div class="control">
+        <input 
+          class="input"
+          type="text"
+          placeholder="Client Name"
+          name="name"
+          maxlength="128"
+          autocapitalize="none"
+          autofocus
+          required
+          id="name"
+        >
+      </div>
+      <p class="help is-danger">
+        {% if 'required' in errors %}
+        Name is required.
+        {% endif %}
+      </p>
+    </div>
+    <div class="field is-grouped">
+      <div class="control">
+        <input class="button is-clickable is-primary" type="submit">
+        <a class="button is-clickable is-danger" href="{% url 'oauth:index' %}">Back</a>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock content %}

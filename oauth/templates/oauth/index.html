@@ -2,7 +2,7 @@
 
 {% block content %}
 <section class="m-4 p-6 block">
-    <a class="button is-clickable is-success">Create</a>
-    <a class="button is-clickable is-danger" href="{% url 'oauth:deactivate' %}">Opt out</a>
+  <a class="button is-clickable is-success" href="{% url 'oauth:create' %}">Create</a>
+  <a class="button is-clickable is-danger" href="{% url 'oauth:deactivate' %}">Opt out</a>
 </section>
 {% endblock content %}
