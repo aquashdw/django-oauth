@@ -50,10 +50,24 @@
       {% endif %}
       <div class="field is-grouped">
         <div class="control">
-          <input class="input is-clickable" type="submit">
+          <input class="button is-clickable is-primary" type="submit">
+          <button id="back-button" class="button is-clickable is-warning" type="button">Go Back</button>
         </div>
       </div>
     </form>
   </div>
 </div>
 {% endblock content %}
+
+{% block script %}
+<script>
+  const backButton = document.getElementById('back-button').addEventListener('click', () => {
+    const referrer = document.referrer
+    if (referrer) {
+      location.assign(referrer)
+    } else {
+      location.assign("{% url 'accounts:index' %}")
+    }
+  })
+</script>
+{% endblock script %}
