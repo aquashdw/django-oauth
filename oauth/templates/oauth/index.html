@@ -36,6 +36,10 @@
       {% endfor %}
     </tbody>
   </table>
+  {% if not clients|length %}
+  <p class="p-5 is-size-5 has-text-info">No Clients yet!</p>
+  {% endif %}
+  <p id="message" class="px-4 is-hidden"></p>
 </section>
 {% endblock content %}
 {% block script %}
@@ -47,5 +51,16 @@ document.querySelectorAll('.copy-btn').forEach(button => button.addEventListener
     event.target.innerText = 'Copy'
   }, 3000)
 }))
+
+const clientDeleted = urlParams.get('delete')
+if (clientDeleted) {
+  const messageElem = document.getElementById('message')
+  messageElem.innerText = 'Client was deleted.'
+  messageElem.classList.add('has-text-warning')
+  messageElem.classList.toggle('is-hidden')
+  setTimeout(() => {
+    messageElem.classList.toggle('is-hidden')
+  }, 3000)
+}
 </script>
 {% endblock script %}

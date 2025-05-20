@@ -149,7 +149,7 @@ const error = urlParams.get('errors')
 if (renameSuccess || error === 'clientname') {
   const renameResultMsg = document.getElementById('rename-result-msg')
   renameResultMsg.innerText = renameSuccess ? 'Rename Success!!!' : 'Rename Failed.'
-  renameResultMsg.classList.toggle(renameSuccess ? 'has-text-success' : 'has-text-danger')
+  renameResultMsg.classList.add(renameSuccess ? 'has-text-success' : 'has-text-danger')
   renameResultMsg.classList.toggle('is-invisible')
   setTimeout(() => {
     renameResultMsg.classList.toggle('is-invisible')

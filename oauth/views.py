@@ -5,7 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.http import require_safe, require_POST
+from django.views.decorators.http import require_safe, require_POST, require_http_methods
 
 from django_oauth.utils import get_perm, redirect_with_nq, extract_form_errors
 from oauth.forms import OAuthClientForm
@@ -31,7 +31,9 @@ def activate(request):
 @require_safe
 @permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
 def index(request):
-    clients = OAuthClient.objects.filter(owner=request.user)
+    clients = (OAuthClient.objects
+               .filter(owner=request.user)
+               .exclude(status=OAuthClient.DELETED))
     context = {
         'clients': clients,
     }
@@ -98,9 +100,18 @@ def update_client(request, pk):
     return redirect_with_nq('oauth:read', params, pk)
 
 
-# remove client
-def delete_client(request):
-    pass
+@require_http_methods(['GET', 'POST'])
+def delete_client(request, pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if request.user != client.owner:
+        raise PermissionDenied
+
+    if request.method == 'GET':
+        return render(request, 'oauth/delete.html', { 'client': client })
+
+    client.status = OAuthClient.DELETED
+    client.save()
+    return redirect_with_nq('oauth:index', {'delete': 'true'})
 
 
 def deactivate(request):
