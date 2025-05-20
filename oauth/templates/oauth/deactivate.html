@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="m-6 p-6 box is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
+  <h1 class="block">Stop using OAuth?</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div class="field is-grouped">
+      <div class="buttons">
+        <input class="button is-clickable is-danger" type="submit" value="Yes">
+        <a class="button is-clickable button is-warning" href="{% url 'oauth:index' %}">No</a>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock content %}

@@ -47,9 +47,15 @@ def delete_client(request):
     pass
 
 
-@require_POST
 def deactivate(request):
-    if request.user.has_perm(OAUTH_LOOKUP_NAME):
+    if not request.user.has_perm(OAUTH_LOOKUP_NAME):
+        return redirect('accounts:index')
+
+    if request.method == 'GET':
+        return render(request, 'oauth/deactivate.html')
+
+    if request.method == 'POST':
         request.user.user_permissions.remove(get_perm(OAUTH_CODENAME))
         request.user.save()
+
     return redirect('accounts:index')

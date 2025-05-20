@@ -1,12 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="m-6 p-6 box is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
-  <form action="{% url 'oauth:deactivate' %}" method="post">
-    {% csrf_token %}
-    <input class="button is-clickable is-danger" type="submit" value="Opt out">
-  </form>
+<section class="m-4 p-6 block">
+    <a class="button is-clickable is-success">Create</a>
+    <a class="button is-clickable is-danger" href="{% url 'oauth:deactivate' %}">Opt out</a>
 </section>
 {% endblock content %}
-
-
