@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section block">
+  <div class="level">
+    <div class="level-left">
+       <h1 class="level-item title is-1">{{ client.name }}</h1>
+    </div>
+    <div class="level-right"><a href="{% url 'oauth:index' %}">Back</a></div>
+  </div>
+  <p class="subtitle">Status: <span class="tag is-warning">{{ client.get_status_display }}</span></p>
+</section>
+<hr>
+{% endblock content %}

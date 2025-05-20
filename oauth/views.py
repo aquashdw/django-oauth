@@ -1,7 +1,8 @@
 from uuid import uuid4
 
 from django.contrib.auth.decorators import permission_required, login_required
-from django.shortcuts import render, redirect
+from django.http import Http404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_safe
 
 from django_oauth.utils import get_perm, redirect_with_nq, extract_form_errors
@@ -62,8 +63,16 @@ def create_client(request):
 
 
 # read one client
-def read_client(request):
-    pass
+def read_client(request, pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if (client.status == OAuthClient.DELETED or
+            client.owner != request.user):
+        raise Http404
+
+    context = {
+        'client': client,
+    }
+    return render(request, 'oauth/details.html', context)
 
 
 # update client
