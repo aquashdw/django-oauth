@@ -8,12 +8,14 @@
         <p class="title is-1">{{ client.name }}</p>
       </div>
       <div class="level-item">
-        <button class="tag is-info" id="rename-client-modal-button" data-modal-target="rename-client-modal">Rename</button>
+        <button class="tag is-info" id="modal-open-button">Rename</button>
       </div>
     </div>
-    <div class="level-right"><a href="{% url 'oauth:index' %}">Back</a></div>
+    <div class="level-right">
+      <a href="{% url 'oauth:index' %}">Back</a>
+    </div>
   </div>
-  <p class="subtitle">Status: <span class="tag is-warning">{{ client.get_status_display }}</span></p>
+  <p class="subtitle">Status: <span class="tag is-medium is-warning">{{ client.get_status_display }}</span></p>
 </section>
 <hr>
 <section class="columns">
@@ -27,7 +29,7 @@
             <input class="input" type="url" name="url" required>
           </div>
           <div class="control">
-            <button class="button is-info">Add</button>
+            <button class="button is-info" type="submit">Add</button>
           </div>
         </div>
       </form>
@@ -58,10 +60,10 @@
       <form class="mb-3">
         <div class="field has-addons">
           <div class="control is-expanded">
-            <input class="input" type="url" name="url" required>
+            <input class="input" type="email" name="email" required>
           </div>
           <div class="control">
-            <button class="button is-info">Add</button>
+            <button class="button is-info" type="submit">Add</button>
           </div>
         </div>
       </form>
@@ -93,11 +95,31 @@
 {% comment %} modal {% endcomment %}
 <div id="rename-client-modal" class="modal">
   <div class="modal-background"></div>
-
   <div class="modal-content">
-    <div class="box">
-      <p>Modal JS example</p>
-      <button class="delete" aria-label="close"></button>
+    <div class="box mx-3">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p class="title is-4">Rename Client</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <button id="modal-close-button" class="delete" aria-label="close"></button>
+          </div>
+        </div>
+      </div>
+      
+      <form class="mb-3">
+        <div class="field has-addons">
+          <div class="control is-expanded">
+            <input class="input" type="text" name="name" required>
+          </div>
+          <div class="control">
+            <button class="button is-info" type="input">Rename</button>
+          </div>
+        </div>
+      </form>
       <!-- Your content -->
     </div>
   </div>
@@ -107,26 +129,21 @@
 
 {% block script %}
 <script>
-const openModal = (modalElem) => modalElem.classList.add('is-active')
+const modal = document.getElementById('rename-client-modal')
 
-const closeModal = (modalElem) => modalElem.classList.remove('is-active')
+const openModal = () => modal.classList.add('is-active')
+const closeModal = () => modal.classList.remove('is-active')
 
-const closeAllModals = () => (document.querySelectorAll('.modal') || []).forEach((modalElem) => closeModal(modalElem))
+document.getElementById('modal-open-button').addEventListener('click', openModal)
 
-document.getElementById('rename-client-modal-button').addEventListener('click', (event) => {
-  const target = event.target
-  const modalId =  target.dataset.modalTarget
-  const modal = document.getElementById(modalId)
-  openModal(modal)
-  modal.querySelector('button.delete').addEventListener('click', () => {
-    closeModal(modal)
-  }, {once: true})
-})
 
+document.querySelector('.modal-background').addEventListener('click', closeModal)
+document.getElementById('modal-close-button').addEventListener('click', closeModal)
 document.addEventListener('keydown', (event) => {
   if(event.key === "Escape") {
-    closeAllModals();
+    closeModal();
   }
 });
+
 </script>
 {% endblock script %}
