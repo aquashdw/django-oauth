@@ -8,8 +8,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_safe, require_POST, require_http_methods
 
 from django_oauth.utils import get_perm, redirect_with_nq, extract_form_errors
-from oauth.forms import OAuthClientForm
-from oauth.models import OAuthClient
+from oauth.forms import OAuthClientForm, CallbackUrlForm
+from oauth.models import OAuthClient, CallbackUrl
 
 OAUTH_CODENAME = 'oauth_active'
 OAUTH_LOOKUP_NAME = 'oauth.oauth_active'
@@ -66,6 +66,7 @@ def create_client(request):
 
 
 @require_safe
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
 def read_client(request, pk):
     client = get_object_or_404(OAuthClient.objects.prefetch_related(
             'test_users',
@@ -80,11 +81,14 @@ def read_client(request, pk):
 
     context = {
         'client': client,
+        'callback_urls': client.callback_urls.all(),
+        'test_users': client.test_users.all(),
     }
     return render(request, 'oauth/details.html', context)
 
 
 @require_POST
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
 def update_client(request, pk):
     client = get_object_or_404(OAuthClient, pk=pk)
     if request.user != client.owner:
@@ -101,6 +105,7 @@ def update_client(request, pk):
 
 
 @require_http_methods(['GET', 'POST'])
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
 def delete_client(request, pk):
     client = get_object_or_404(OAuthClient, pk=pk)
     if request.user != client.owner:
@@ -114,10 +119,9 @@ def delete_client(request, pk):
     return redirect_with_nq('oauth:index', {'delete': 'true'})
 
 
+@login_required
+@permission_required(OAUTH_LOOKUP_NAME, login_url='accounts:index')
 def deactivate(request):
-    if not request.user.has_perm(OAUTH_LOOKUP_NAME):
-        return redirect('accounts:index')
-
     if request.method == 'GET':
         return render(request, 'oauth/deactivate.html')
 
@@ -126,3 +130,33 @@ def deactivate(request):
         request.user.save()
 
     return redirect('accounts:index')
+
+
+@require_POST
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
+def add_callback(request, pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if request.user != client.owner:
+        raise PermissionDenied
+
+    if not client.callback_urls.count() < 4:
+        return redirect_with_nq('oauth:read', {'callback': 'exceed_limit'}, pk)
+
+    form = CallbackUrlForm(request.POST)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.client = client
+        instance.save()
+        return redirect_with_nq('oauth:read', {'callback': 'add'}, pk)
+
+    return redirect_with_nq('oauth:read', {'callback': 'error'}, pk)
+
+@require_POST
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
+def remove_callback(request, pk, callback_pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if request.user != client.owner:
+        raise PermissionDenied
+    callback = get_object_or_404(CallbackUrl, pk=callback_pk)
+    callback.delete()
+    return redirect_with_nq('oauth:read', {'callback': 'delete'}, pk)

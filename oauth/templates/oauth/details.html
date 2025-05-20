@@ -20,10 +20,11 @@
 <hr>
 <section class="columns">
   <div class="column">
-    <section class="mx-5 has-text-centered">
+    <section class="mx-5 block has-text-centered">
       <h2 class="title mb-2">Callback URLs</h2>
       <p class="subtitle">URLs to notify user's approval</p>
-      <form class="mb-3">
+      <form class="mb-3" action="{% url 'oauth:callback_add' client.pk %}" method="post">
+        {% csrf_token %}
         <div class="field has-addons">
           <div class="control is-expanded">
             <input class="input" type="url" name="url" required>
@@ -33,17 +34,20 @@
           </div>
         </div>
       </form>
-      {% if client.callback_urls|length %}
-      <table class="table has-text-centered">
+      {% if callback_urls %}
+      <table class="table is-fullwidth">
         <thead>
-          <th>Callback URLs</th>
-          <td>Action</td>
+          <th class="has-text-left">Callback URLs</th>
+          <td class="has-text-right">Action</td>
         </thead>
         <tbody>
-          {% for url in client.callback_urls.all %}
+          {% for url in callback_urls %}
           <tr>
-            <td>{{ url }}</td>
-            <td><button class="tag is-danger">Delete</button></td>
+            <td class="has-text-left">{{ url.url }}</td>
+            <td class="has-text-right"><form action="{% url 'oauth:callback_remove' client.pk url.pk %}" method="post">
+              {% csrf_token %}
+              <button class="tag is-danger is-light" type="submit">Delete</button>
+            </form></td>
           </tr>
           {% endfor %}
         </tbody>
@@ -51,6 +55,7 @@
       {% else %}
       <p class="is-size-5 has-text-warning">No Callback URLs set</h3>
       {% endif %}
+      <p id="callback-msg" class="is-invisible"></p>
     </section>
   </div>
   <div class="column">
@@ -68,16 +73,16 @@
         </div>
       </form>
       {% if client.test_users|length %}
-      <table class="table has-text-centered">
+      <table class="table">
         <thead>
-          <th>Testers</th>
-          <td>Action</td>
+          <th class="has-text-left">Testers</th>
+          <td class="has-text-right">Action</td>
         </thead>
         <tbody>
           {% for tester in test_users %}
           <tr>
-            <td>{{ tester.email }}</td>
-            <td><button class="tag is-danger">Remove</button></td>
+            <td class="has-text-left">{{ tester.email }}</td>
+            <td class="has-text-right"><button class="tag is-danger is-light">Remove</button></td>
           </tr>
           {% endfor %}
         </tbody>
@@ -129,6 +134,7 @@
 {% endblock content %}
 
 {% block script %}
+{% comment %} rename client {% endcomment %}
 <script>
 const modal = document.getElementById('rename-client-modal')
 
@@ -143,7 +149,6 @@ document.addEventListener('keydown', (event) => {
     closeModal();
   }
 });
-
 const renameSuccess = urlParams.get('rename')
 const error = urlParams.get('errors')
 if (renameSuccess || error === 'clientname') {
@@ -155,6 +160,34 @@ if (renameSuccess || error === 'clientname') {
     renameResultMsg.classList.toggle('is-invisible')
   }, 3000)
 }
+</script>
 
+{% comment %} callback urls {% endcomment %}
+<script>
+const callback = urlParams.get('callback')
+if (callback) {
+  const callbackMsg = document.getElementById('callback-msg')
+  if (callback === 'add') {
+    callbackMsg.innerText = 'URL added'
+    callbackMsg.classList.add('has-text-success')
+  }
+  else if (callback === 'delete') {
+    callbackMsg.innerText = 'URL deleted'
+    callbackMsg.classList.add('has-text-warning')
+  }
+  else if (callback === 'exceed_limit') {
+    callbackMsg.innerText = 'Maximum of 4 URLs allowed'
+    callbackMsg.classList.add('has-text-danger')
+  }
+  else {
+    callbackMsg.innerText = 'Error: Check for duplicates'
+    callbackMsg.classList.add('has-text-danger')
+  }
+  
+  callbackMsg.classList.toggle('is-invisible')
+  setTimeout(() => {
+    callbackMsg.classList.toggle('is-invisible')
+  }, 3000)
+}
 </script>
 {% endblock script %}

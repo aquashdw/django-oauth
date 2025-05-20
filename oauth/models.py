@@ -31,4 +31,4 @@ class OAuthClient(models.Model):
 
 class CallbackUrl(models.Model):
     client = models.ForeignKey(OAuthClient, on_delete=models.CASCADE, related_name='callback_urls')
-    url = models.URLField(max_length=256)
+    url = models.URLField(max_length=256, unique=True)

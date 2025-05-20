@@ -4,11 +4,16 @@ from oauth import views
 
 app_name = 'oauth'
 urlpatterns = [
+    # oauth
     path('activate/', views.activate, name='activate'),
+    path('deactivate/', views.deactivate, name='deactivate'),
     path('', views.index, name='index'),
+    # clients
     path('create/', views.create_client, name='create'),
     path('<int:pk>/', views.read_client, name='read'),
     path('<int:pk>/update/', views.update_client, name='update'),
     path('<int:pk>/delete/', views.delete_client, name='delete'),
-    path('deactivate/', views.deactivate, name='deactivate'),
+    # callbacks
+    path('<int:pk>/callbacks/', views.add_callback, name='callback_add'),
+    path('<int:pk>/callbacks/<int:callback_pk>/', views.remove_callback, name='callback_remove'),
 ]
