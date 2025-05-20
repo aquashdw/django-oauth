@@ -8,7 +8,7 @@
         <p class="title is-1">{{ client.name }}</p>
       </div>
       <div class="level-item">
-        <button class="tag is-info">Rename</button>
+        <button class="tag is-info" id="rename-client-modal-button" data-modal-target="rename-client-modal">Rename</button>
       </div>
     </div>
     <div class="level-right"><a href="{% url 'oauth:index' %}">Back</a></div>
@@ -90,4 +90,43 @@
 <section class="block px-6">
   <a class="button is-clickable is-danger" href="{% url 'oauth:delete' client.pk %}">Delete</a>
 </section>
+{% comment %} modal {% endcomment %}
+<div id="rename-client-modal" class="modal">
+  <div class="modal-background"></div>
+
+  <div class="modal-content">
+    <div class="box">
+      <p>Modal JS example</p>
+      <button class="delete" aria-label="close"></button>
+      <!-- Your content -->
+    </div>
+  </div>
+</div>
+
 {% endblock content %}
+
+{% block script %}
+<script>
+const openModal = (modalElem) => modalElem.classList.add('is-active')
+
+const closeModal = (modalElem) => modalElem.classList.remove('is-active')
+
+const closeAllModals = () => (document.querySelectorAll('.modal') || []).forEach((modalElem) => closeModal(modalElem))
+
+document.getElementById('rename-client-modal-button').addEventListener('click', (event) => {
+  const target = event.target
+  const modalId =  target.dataset.modalTarget
+  const modal = document.getElementById(modalId)
+  openModal(modal)
+  modal.querySelector('button.delete').addEventListener('click', () => {
+    closeModal(modal)
+  }, {once: true})
+})
+
+document.addEventListener('keydown', (event) => {
+  if(event.key === "Escape") {
+    closeAllModals();
+  }
+});
+</script>
+{% endblock script %}
