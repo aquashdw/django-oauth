@@ -1,11 +1,14 @@
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlencode
 from uuid import uuid4
 
-from django.contrib.auth import get_user_model
+import jwt
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied, BadRequest
 from django.shortcuts import render, redirect
+from hashids import Hashids
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -15,7 +18,8 @@ from oauth.serializer import OAuthTokenRequestSerializer
 
 OAUTH_CODENAME = 'oauth_active'
 OAUTH_LOOKUP_NAME = 'oauth.oauth_active'
-User = get_user_model()
+SECRET_KEY = settings.SECRET_KEY
+hashids = Hashids(salt=SECRET_KEY[-16:], min_length=8)
 
 
 @login_required
@@ -70,4 +74,16 @@ def token(request):
     cache.delete(code)
 
     user = instance.get('user')
-    return Response(data={'email': user.email})
+    now = datetime.now(timezone.utc)
+    expires = now + timedelta(seconds=3605)
+    encoded_jwt = jwt.encode({
+        'sub': hashids.encode(user.pk),
+        'iat': now,
+        'exp': expires,
+    }, SECRET_KEY, 'HS256')
+
+    return Response(data={
+        'token_type': 'bearer',
+        'access_token': encoded_jwt,
+        'expires_in': expires,
+    })
