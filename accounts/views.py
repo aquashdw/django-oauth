@@ -4,6 +4,7 @@ from uuid import uuid4
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_safe
@@ -32,7 +33,7 @@ def signup(request):
             params['token'] = uuid
             link = f'{reverse("accounts:signup_confirm")}?{urlencode(params)}'
             send_mail(instance.email, 'Sign Up Request', f'<a href="{link}">Sign Up Link</a>')
-            
+
             cache.set(signup_token, instance, timeout=600)
 
             return redirect_with_nq('accounts:verify', {'created': 'true'})
@@ -45,7 +46,7 @@ def signup(request):
         'errors': request.GET.get('errors', '').split(','),
         'email': request.GET.get('email', None),
     }
-    
+
     return render(request, 'accounts/signup.html', context)
 
 
@@ -54,9 +55,11 @@ def signup_confirm(request):
     token = request.GET.get('token')
     if not token:
         return redirect('accounts:signin')
-    
+
     signup_token = f'auth-signup-token-{token}'
     instance = cache.get(signup_token)
+    if not instance:
+        raise Http404
     instance.is_verified = True
     instance.save()
     cache.delete(signup_token)
