@@ -1,7 +1,9 @@
+from urllib.parse import urlencode
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required, login_required
+from django.core.cache import cache
 from django.core.exceptions import PermissionDenied, BadRequest
 from django.db.models import Prefetch
 from django.http import Http404
@@ -229,3 +231,10 @@ def authorize(request):
 
     if request.method == 'GET':
         return render(request, 'oauth/authorize.html', {'client': client})
+
+    code = str(uuid4()).replace('-', '')
+    cache.set(code, request.user, timeout=600)
+    params = {'code': code}
+    if request.GET.get('state'):
+        params['state'] = request.GET.get('state')
+    return redirect(f'{callback_url}?{urlencode(params)}')
