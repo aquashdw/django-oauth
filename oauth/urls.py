@@ -24,5 +24,6 @@ urlpatterns = [
     # oauth
     path('authorize/', authorize_views.authorize, name='authorize'),
     path('token/', authorize_views.token, name='token'),
-    path('user-info/', authorize_views.get_user_info, name='user_info')
+    path('user-info/', authorize_views.get_user_info, name='user_info'),
+    path('refresh/', authorize_views.refresh, name='refresh'),
 ]

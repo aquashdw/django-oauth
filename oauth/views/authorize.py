@@ -25,7 +25,7 @@ OAUTH_LOOKUP_NAME = 'oauth.oauth_active'
 SECRET_KEY = settings.SECRET_KEY
 JWT_ALGORITHM = 'HS256'
 ACCESS_EXPIRES_AFTER = 3605
-REFRESH_EXPIRES_AFTER = 3600 * 24 * 7
+REFRESH_EXPIRES_AFTER = 3600 * 8
 hashids = Hashids(salt=SECRET_KEY[-16:], min_length=8)
 
 
@@ -79,8 +79,61 @@ def token(request):
     if client.client_secret != serializer.validated_data['client_secret']:
         return Response(status=status.HTTP_403_FORBIDDEN)
     cache.delete(code)
-
     user = instance.get('user')
+    return Response(data=create_tokens(user))
+
+
+@api_view(None)
+def get_user_info(request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return Response({"error": "Missing or invalid token"}, status=401)
+
+    try:
+        payload = jwt.decode(auth_header.split(" ")[1], SECRET_KEY, JWT_ALGORITHM)
+    except ExpiredSignatureError:
+        return Response(data={'error': 'expired token'}, status=status.HTTP_401_UNAUTHORIZED)
+    except InvalidSignatureError:
+        return Response(data={'error': 'invalid token'}, status=status.HTTP_403_FORBIDDEN)
+
+    if payload.get('type') != 'access':
+        return Response(data={'error': 'invalid token'}, status=status.HTTP_403_FORBIDDEN)
+
+    user = User.objects.filter(pk=hashids.decode(payload.get('sub'))[0]).first()
+    if not user:
+        return Response(data={'error': 'internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response(data={'email': user.email})
+
+
+@api_view(['POST'])
+def refresh(request):
+    refresh_token = request.data.get("token")
+    if not refresh_token:
+        return Response({"error": "Missing or invalid token"}, status=401)
+
+    try:
+        payload = jwt.decode(refresh_token, SECRET_KEY, JWT_ALGORITHM)
+    except ExpiredSignatureError:
+        return Response(data={'error': 'expired token'}, status=status.HTTP_401_UNAUTHORIZED)
+    except InvalidSignatureError:
+        return Response(data={'error': 'invalid token'}, status=status.HTTP_403_FORBIDDEN)
+
+    if payload.get('type') != 'refresh':
+        return Response(data={'error': 'invalid token'}, status=status.HTTP_403_FORBIDDEN)
+
+    user = User.objects.filter(pk=hashids.decode(payload.get('sub'))[0]).first()
+    if not user:
+        return Response(data={'error': 'internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    active_refresh_token = cache.get(f'{user.pk}-refresh')
+    if not active_refresh_token or active_refresh_token != refresh_token:
+        return Response(data={'error': 'invalid token'}, status=status.HTTP_403_FORBIDDEN)
+
+    return Response(data=create_tokens(user))
+
+
+def create_tokens(user):
     now = datetime.now(timezone.utc)
     access_expires = now + timedelta(seconds=ACCESS_EXPIRES_AFTER)
     access_token = jwt.encode({
@@ -98,29 +151,12 @@ def token(request):
         'exp': refresh_expires,
     }, SECRET_KEY, JWT_ALGORITHM)
 
-    return Response(data={
+    cache.set(f'{user.pk}-refresh', refresh_token, REFRESH_EXPIRES_AFTER)
+
+    return {
         'token_type': 'bearer',
         'access_token': access_token,
         'access_expires_in': access_expires,
         'refresh_token': refresh_token,
         'refresh_expires_in': refresh_expires
-    })
-
-
-@api_view(None)
-def get_user_info(request):
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        return Response({"error": "Missing or invalid token"}, status=401)
-
-    try:
-        payload = jwt.decode(auth_header.split(" ")[1], SECRET_KEY, JWT_ALGORITHM)
-    except ExpiredSignatureError:
-        return Response(data={'error': 'expired token'}, status=status.HTTP_401_UNAUTHORIZED)
-    except InvalidSignatureError:
-        return Response(data={'error': 'invalid token'}, status=status.HTTP_403_FORBIDDEN)
-    user = User.objects.filter(pk=hashids.decode(payload.get('sub'))[0]).first()
-    if not user:
-        return Response(data={'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    return Response(data={'email': user.email})
+    }
