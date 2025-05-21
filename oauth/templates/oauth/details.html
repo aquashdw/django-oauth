@@ -23,6 +23,7 @@
     <section class="mx-5 block has-text-centered">
       <h2 class="title mb-2">Callback URLs</h2>
       <p class="subtitle">URLs to notify user's approval</p>
+      {% comment %} add url form {% endcomment %}
       <form class="mb-3" action="{% url 'oauth:callback_add' client.pk %}" method="post">
         {% csrf_token %}
         <div class="field has-addons">
@@ -30,7 +31,7 @@
             <input class="input" type="url" name="url" required>
           </div>
           <div class="control">
-            <button class="button is-info" type="submit">Add</button>
+            <button class="button is-info" type="submit" {% if not callback_urls|length < 4 %}disabled{% endif %}>Add</button>
           </div>
         </div>
       </form>
@@ -44,10 +45,13 @@
           {% for url in callback_urls %}
           <tr>
             <td class="has-text-left">{{ url.url }}</td>
-            <td class="has-text-right"><form action="{% url 'oauth:callback_remove' client.pk url.pk %}" method="post">
-              {% csrf_token %}
-              <button class="tag is-danger is-light" type="submit">Delete</button>
-            </form></td>
+            {% comment %} remove form {% endcomment %}
+            <td class="has-text-right">
+              <form action="{% url 'oauth:callback_remove' client.pk url.pk %}" method="post">
+                {% csrf_token %}
+                <button class="tag is-danger is-light" type="submit">Delete</button>
+              </form>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -62,18 +66,20 @@
     <section class="mx-5 has-text-centered">
       <h2 class="title mb-2">Testers</h2>
       <p class="subtitle">Users allowed before open</p>
-      <form class="mb-3">
+      {% comment %} add user form {% endcomment %}
+      <form class="mb-3" action="{% url 'oauth:testuser_add' client.pk %}" method="post">
+        {% csrf_token %}
         <div class="field has-addons">
           <div class="control is-expanded">
             <input class="input" type="email" name="email" required>
           </div>
           <div class="control">
-            <button class="button is-info" type="submit">Add</button>
+            <button class="button is-info" type="submit" {% if not test_users|length < 10 %}disabled{% endif %}>Add</button>
           </div>
         </div>
       </form>
-      {% if client.test_users|length %}
-      <table class="table">
+      {% if test_users %}
+      <table class="table is-fullwidth">
         <thead>
           <th class="has-text-left">Testers</th>
           <td class="has-text-right">Action</td>
@@ -82,7 +88,13 @@
           {% for tester in test_users %}
           <tr>
             <td class="has-text-left">{{ tester.email }}</td>
-            <td class="has-text-right"><button class="tag is-danger is-light">Remove</button></td>
+            <td class="has-text-right">
+              <form action="{% url 'oauth:testuser_remove' client.pk %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="email" value="{{ tester.email }}">
+                <button class="tag is-danger is-light" type="submit">Remove</button>
+              </form>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -90,6 +102,7 @@
       {% else %}
       <p class="is-size-5 has-text-warning">No testers invited</h3>
       {% endif %}
+      <p id="testuser-msg" class="is-invisible"></p>
     </section>
   </div>
 </section>
@@ -171,8 +184,8 @@ if (callback) {
     callbackMsg.innerText = 'URL added'
     callbackMsg.classList.add('has-text-success')
   }
-  else if (callback === 'delete') {
-    callbackMsg.innerText = 'URL deleted'
+  else if (callback === 'remove') {
+    callbackMsg.innerText = 'URL removed'
     callbackMsg.classList.add('has-text-warning')
   }
   else if (callback === 'exceed_limit') {
@@ -187,6 +200,40 @@ if (callback) {
   callbackMsg.classList.toggle('is-invisible')
   setTimeout(() => {
     callbackMsg.classList.toggle('is-invisible')
+  }, 3000)
+}
+</script>
+
+{% comment %} test users {% endcomment %}
+<script>
+const testuser = urlParams.get('testuser')
+if (testuser) {
+  const testuserMsg = document.getElementById('testuser-msg')
+  if (testuser === 'add') {
+    testuserMsg.innerText = 'Test user added'
+    testuserMsg.classList.add('has-text-success')
+  }
+  else if (testuser === 'remove') {
+    testuserMsg.innerText = 'Test user removed'
+    testuserMsg.classList.add('has-text-warning')}
+  else if (testuser === 'exceed_limit') {
+    testuserMsg.innerText = 'Maximum of 10 Users allowed'
+    testuserMsg.classList.add('has-text-danger')}
+  else if (testuser === 'duplicate') {
+    testuserMsg.innerText = 'User already added'
+    testuserMsg.classList.add('has-text-danger')}
+  else if (testuser === 'not_found') {
+    testuserMsg.innerText = 'User not found'
+    testuserMsg.classList.add('has-text-danger')
+  }
+  else {
+    testuserMsg.innerText = 'Error'
+    testuserMsg.classList.add('has-text-danger')
+  }
+
+  testuserMsg.classList.toggle('is-invisible')
+  setTimeout(() => {
+    testuserMsg.classList.toggle('is-invisible')
   }, 3000)
 }
 </script>

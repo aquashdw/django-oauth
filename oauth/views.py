@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required, login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch
@@ -13,6 +14,7 @@ from oauth.models import OAuthClient, CallbackUrl
 
 OAUTH_CODENAME = 'oauth_active'
 OAUTH_LOOKUP_NAME = 'oauth.oauth_active'
+User = get_user_model()
 
 
 @login_required
@@ -68,7 +70,8 @@ def create_client(request):
 @require_safe
 @permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
 def read_client(request, pk):
-    client = get_object_or_404(OAuthClient.objects.prefetch_related(
+    client = get_object_or_404(
+        OAuthClient.objects.prefetch_related(
             'test_users',
             Prefetch('callback_urls'),
         ),
@@ -112,7 +115,7 @@ def delete_client(request, pk):
         raise PermissionDenied
 
     if request.method == 'GET':
-        return render(request, 'oauth/delete.html', { 'client': client })
+        return render(request, 'oauth/delete.html', {'client': client})
 
     client.status = OAuthClient.DELETED
     client.save()
@@ -151,6 +154,7 @@ def add_callback(request, pk):
 
     return redirect_with_nq('oauth:read', {'callback': 'error'}, pk)
 
+
 @require_POST
 @permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
 def remove_callback(request, pk, callback_pk):
@@ -159,4 +163,46 @@ def remove_callback(request, pk, callback_pk):
         raise PermissionDenied
     callback = get_object_or_404(CallbackUrl, pk=callback_pk)
     callback.delete()
-    return redirect_with_nq('oauth:read', {'callback': 'delete'}, pk)
+    return redirect_with_nq('oauth:read', {'callback': 'remove'}, pk)
+
+
+@require_POST
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
+def add_test_user(request, pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if request.user != client.owner:
+        raise PermissionDenied
+
+    if not client.test_users.count() < 10:
+        return redirect_with_nq('oauth:read', {'testuser': 'exceed_limit'}, pk)
+
+    email = request.POST.get('email', '')
+    test_user = User.objects.filter(email=email).first()
+    if not test_user:
+        return redirect_with_nq('oauth:read', {'testuser': 'not_found'}, pk)
+
+    if client.test_users.contains(test_user):
+        return redirect_with_nq('oauth:read', {'testuser': 'duplicate'}, pk)
+    client.test_users.add(test_user)
+    client.save()
+    return redirect_with_nq('oauth:read', {'testuser': 'add'}, pk)
+
+
+@require_POST
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
+def remove_test_user(request, pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if request.user != client.owner:
+        raise PermissionDenied
+
+    email = request.POST.get('email', '')
+    test_user = User.objects.filter(email=email).first()
+    if not test_user:
+        return redirect_with_nq('oauth:read', {'testuser': 'not_found'}, pk)
+
+    if not client.test_users.contains(test_user):
+        return redirect_with_nq('oauth:read', {'testuser': 'not_found'}, pk)
+
+    client.test_users.remove(test_user)
+    client.save()
+    return redirect_with_nq('oauth:read', {'testuser': 'remove'}, pk)
