@@ -4,17 +4,21 @@ from uuid import uuid4
 
 import jwt
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied, BadRequest
 from django.shortcuts import render, redirect
 from hashids import Hashids
+from jwt import ExpiredSignatureError, InvalidSignatureError
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from oauth.models import OAuthClient, CallbackUrl
 from oauth.serializer import OAuthTokenRequestSerializer
+
+User = get_user_model()
 
 OAUTH_CODENAME = 'oauth_active'
 OAUTH_LOOKUP_NAME = 'oauth.oauth_active'
@@ -101,3 +105,22 @@ def token(request):
         'refresh_token': refresh_token,
         'refresh_expires_in': refresh_expires
     })
+
+
+@api_view(None)
+def get_user_info(request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return Response({"error": "Missing or invalid token"}, status=401)
+
+    try:
+        payload = jwt.decode(auth_header.split(" ")[1], SECRET_KEY, JWT_ALGORITHM)
+    except ExpiredSignatureError:
+        return Response(data={'error': 'expired token'}, status=status.HTTP_401_UNAUTHORIZED)
+    except InvalidSignatureError:
+        return Response(data={'error': 'invalid token'}, status=status.HTTP_403_FORBIDDEN)
+    user = User.objects.filter(pk=hashids.decode(payload.get('sub'))[0]).first()
+    if not user:
+        return Response(data={'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    return Response(data={'email': user.email})
