@@ -19,6 +19,9 @@ from oauth.serializer import OAuthTokenRequestSerializer
 OAUTH_CODENAME = 'oauth_active'
 OAUTH_LOOKUP_NAME = 'oauth.oauth_active'
 SECRET_KEY = settings.SECRET_KEY
+JWT_ALGORITHM = 'HS256'
+ACCESS_EXPIRES_AFTER = 3605
+REFRESH_EXPIRES_AFTER = 3600 * 24 * 7
 hashids = Hashids(salt=SECRET_KEY[-16:], min_length=8)
 
 
@@ -75,15 +78,26 @@ def token(request):
 
     user = instance.get('user')
     now = datetime.now(timezone.utc)
-    expires = now + timedelta(seconds=3605)
-    encoded_jwt = jwt.encode({
+    access_expires = now + timedelta(seconds=ACCESS_EXPIRES_AFTER)
+    access_token = jwt.encode({
         'sub': hashids.encode(user.pk),
+        'type': 'access',
         'iat': now,
-        'exp': expires,
-    }, SECRET_KEY, 'HS256')
+        'exp': access_expires,
+    }, SECRET_KEY, JWT_ALGORITHM)
+
+    refresh_expires = now + timedelta(seconds=REFRESH_EXPIRES_AFTER)
+    refresh_token = jwt.encode({
+        'sub': hashids.encode(user.pk),
+        'type': 'refresh',
+        'iat': now,
+        'exp': refresh_expires,
+    }, SECRET_KEY, JWT_ALGORITHM)
 
     return Response(data={
         'token_type': 'bearer',
-        'access_token': encoded_jwt,
-        'expires_in': expires,
+        'access_token': access_token,
+        'access_expires_in': access_expires,
+        'refresh_token': refresh_token,
+        'refresh_expires_in': refresh_expires
     })
