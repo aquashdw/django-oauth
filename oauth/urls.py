@@ -20,6 +20,7 @@ urlpatterns = [
     path('<int:pk>/test-users/', views.add_test_user, name='testuser_add'),
     path('<int:pk>/test-users/remove/', views.remove_test_user, name='testuser_remove'),
 
-    # authorize
+    # oauth
     path('authorize/', views.authorize, name='authorize'),
+    path('token/', views.token, name='token'),
 ]
