@@ -19,4 +19,7 @@ urlpatterns = [
     # test_users
     path('<int:pk>/test-users/', views.add_test_user, name='testuser_add'),
     path('<int:pk>/test-users/remove/', views.remove_test_user, name='testuser_remove'),
+
+    # authorize
+    path('authorize/', views.authorize, name='authorize'),
 ]

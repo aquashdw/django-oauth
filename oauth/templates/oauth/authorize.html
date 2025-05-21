@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="m-6 p-6 box has-text-centered">
+  <div class="block">
+    <p class="title">
+      <strong>"{{ client.name }}"</strong> is asking for your info.
+    </p>
+    <p>If you want to allow {{ client.name }} to use your account information, press "Yes" below.</p>
+  </div>
+  <form method="post" class="mx-auto">
+    {% csrf_token %}
+    <div class="field">
+      <div class="buttons is-centered">
+        <input class="button is-clickable is-success" type="submit" value="Yes">
+        <button id="back-button" class="button is-clickable is-warning" type="button">No</button>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock content %}
+
+{% block script %}
+<script>
+  let callback = urlParams.get('callback')
+  const state = urlParams.get('state')
+  const backButton = document.getElementById('back-button').addEventListener('click', () => {
+    callback += `?error=refused`
+    if (state) callback += `&state=${state}`
+    location.assign(callback)
+  })
+</script>
+{% endblock script %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="m-3 hero box is-medium has-text-centered">
+  <div class="hero-body">
+    <p class="title is-1">400</p>
+    <p class="subtitle">You did not provide enough information to carry out the request.</p>
+    <p>If this happened while trying to login to a different service, please notify your service provider.</p>
+    <a id="back-link">Go back</a>
+  </div>
+</section>
+{% endblock content %}
+
+{% block script %}
+<script>
+  document.getElementById('back-link').addEventListener('click', () => {
+    const referrer = document.referrer
+    if (referrer) {
+      location.assign(referrer)
+    } else {
+      location.assign("{% url 'accounts:index' %}")
+    }
+  })
+</script>
+{% endblock script %}
