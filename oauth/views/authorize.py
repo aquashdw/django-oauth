@@ -1,3 +1,4 @@
+import hashlib
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlencode
 from uuid import uuid4
@@ -80,7 +81,7 @@ def token(request):
         return Response(status=status.HTTP_403_FORBIDDEN)
     cache.delete(code)
     user = instance.get('user')
-    return Response(data=create_tokens(user))
+    return Response(data=create_tokens(request, user))
 
 
 @api_view(None)
@@ -126,14 +127,14 @@ def refresh(request):
     if not user:
         return Response(data={'error': 'internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    active_refresh_token = cache.get(f'{user.pk}-refresh')
+    active_refresh_token = cache.get(f'{user.pk}-{client_fingerprint(request)}-refresh')
     if not active_refresh_token or active_refresh_token != refresh_token:
         return Response(data={'error': 'invalid token'}, status=status.HTTP_403_FORBIDDEN)
 
-    return Response(data=create_tokens(user))
+    return Response(data=create_tokens(request, user))
 
 
-def create_tokens(user):
+def create_tokens(request, user):
     now = datetime.now(timezone.utc)
     access_expires = now + timedelta(seconds=ACCESS_EXPIRES_AFTER)
     access_token = jwt.encode({
@@ -151,7 +152,7 @@ def create_tokens(user):
         'exp': refresh_expires,
     }, SECRET_KEY, JWT_ALGORITHM)
 
-    cache.set(f'{user.pk}-refresh', refresh_token, REFRESH_EXPIRES_AFTER)
+    cache.set(f'{user.pk}-{client_fingerprint(request)}-refresh', refresh_token, REFRESH_EXPIRES_AFTER)
 
     return {
         'token_type': 'bearer',
@@ -160,3 +161,13 @@ def create_tokens(user):
         'refresh_token': refresh_token,
         'refresh_expires_in': refresh_expires
     }
+
+
+def client_fingerprint(request):
+    user_agent = request.META.get("HTTP_USER_AGENT", "")
+    accept = request.META.get("HTTP_ACCEPT", "")
+    lang = request.META.get("HTTP_ACCEPT_LANGUAGE", "")
+    enc = request.META.get("HTTP_ACCEPT_ENCODING", "")
+    ip = request.META.get("REMOTE_ADDR", "")
+    raw = f"{user_agent}|{accept}|{lang}|{enc}|{ip}"
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
