@@ -18,6 +18,7 @@ class OAuthClient(models.Model):
     client_secret = models.CharField(max_length=128)
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, default=DEVELOPMENT)
 
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='using_apps')
     test_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='is_tester_of')
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -31,4 +32,9 @@ class OAuthClient(models.Model):
 
 class CallbackUrl(models.Model):
     client = models.ForeignKey(OAuthClient, on_delete=models.CASCADE, related_name='callback_urls')
-    url = models.URLField(max_length=256, unique=True)
+    url = models.URLField(max_length=256)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['client', 'url'], name='unique_url_per_client')
+        ]

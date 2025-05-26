@@ -1,4 +1,96 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<h1>{{ user }}</h1>
+<div class="columns">
+  <div class="column is-two-fifths">
+    <div class="box m-4">
+      <p class="image is-1by1">
+        <img class="is-rounded" src="{% static 'assets/images/user.png' %}" alt="Profile Image">
+      </p>
+
+      <h1 class="title is-4">Nickname</h1>
+      <p class="subtitle is-6">{{ user }}</p>
+      <h2 class="title is-5">Bio</h2>
+      <p class="subtitle is-6">Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
+
+      <div class="mb-4">
+        <p class="title is-6">Linkedin</p>
+        <p class="subtitle is-6"><a href="#">https://www.linkedin.com/in/jeeho-park-191241185/</a></p>
+      </div>
+
+      <div class="mb-4">
+        <p class="title is-6">Github</p>
+        <p class="subtitle is-6"><a href="#">https://github.com/aquashdw</a></p>
+      </div>
+
+      <div class="mb-4">
+        <p class="title is-6">Blog</p>
+        <p class="subtitle is-6"><a href="#">https://velog.io/@aquashdw/posts</a></p>
+      </div>
+    </div>
+  </div>
+  <div class="column">
+    <section class="section">
+      <h2 class="title">Using Services</h2>
+      <p class="subtitle">Services that can use your info.</p>
+      <article class="media">
+        <figure class="media-left">
+          <p class="image is-48x48">
+            <img src="{% static 'assets/images/application.png' %}" alt="App Image">
+          </p>
+        </figure>
+        <div class="media-content">
+          <div class="level is-mobile">
+            <div class="level-left">
+              <div class="level-item">
+                <div class="content">
+                  <h3 class="title is-4">App Name</h3>
+                  <p class="subtitle is-6">App Desc</p>
+                </div>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <button class="button is-info">Go</button>
+              </div>
+              <div class="level-item">
+                <button class="button is-danger">Revoke</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+      <p>If you revoke, you may need to re-login at the target service.</p>
+    </section>
+    <hr class="my-2">
+    <section class="section">
+      <h2 class="title">My Apps</h2>
+      <p class="subtitle">My OAuth apps.</p>
+      <article class="media">
+        <figure class="media-left">
+          <p class="image is-48x48">
+            <img src="{% static 'assets/images/application.png' %}" alt="App Image">
+          </p>
+        </figure>
+        <div class="media-content">
+          <div class="level is-mobile">
+            <div class="level-left">
+              <div class="level-item">
+                <div class="content">
+                  <h3 class="title is-4">App Name</h3>
+                  <p class="subtitle is-6">App Desc</p>
+                </div>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <button class="button is-info">Go</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+</div>
 {% endblock content %}
