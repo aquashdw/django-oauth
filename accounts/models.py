@@ -14,8 +14,11 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    def get_nickname(self):
+        return self.nickname if self.nickname else self.email
+
 
 class UserLinks(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_links')
     name = models.CharField(max_length=32)
     url = models.URLField(max_length=256)

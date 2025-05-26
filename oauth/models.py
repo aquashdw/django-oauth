@@ -12,8 +12,9 @@ class OAuthClient(models.Model):
         (DELETED, 'Deleted'),
     ]
 
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='client_apps')
     name = models.CharField(max_length=128)
+    desc = models.CharField(max_length=128, null=True)
     client_id = models.CharField(max_length=128)
     client_secret = models.CharField(max_length=128)
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, default=DEVELOPMENT)
@@ -23,6 +24,9 @@ class OAuthClient(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def get_desc(self):
+        return self.desc if self.desc else ''
 
     class Meta:
         permissions = [

@@ -8,12 +8,22 @@
         <img class="is-rounded" src="{% static 'assets/images/user.png' %}" alt="Profile Image">
       </p>
 
-      <h1 class="title is-4">Nickname</h1>
+      <h1 class="title is-4">{{ user.get_nickname }}</h1>
       <p class="subtitle is-6">{{ user }}</p>
-      <h2 class="title is-5">Bio</h2>
-      <p class="subtitle is-6">Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
+      {% if user.bio %}
+        <h2 class="title is-5">Bio</h2>
+        <p class="subtitle is-6">Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
+      {% endif %}
 
+      {% for link in links %}
       <div class="mb-4">
+        <p class="title is-6">{{ link.name }}</p>
+        <p class="subtitle is-6"><a href="{{ link.url }}">{{ link.url }}</a></p>
+      </div>
+      {% empty %}
+      <p>No links</p>
+      {% endfor %}
+      {% comment %} <div class="mb-4">
         <p class="title is-6">Linkedin</p>
         <p class="subtitle is-6"><a href="#">https://www.linkedin.com/in/jeeho-park-191241185/</a></p>
       </div>
@@ -26,7 +36,9 @@
       <div class="mb-4">
         <p class="title is-6">Blog</p>
         <p class="subtitle is-6"><a href="#">https://velog.io/@aquashdw/posts</a></p>
-      </div>
+      </div> {% endcomment %}
+      <button class="button">Edit</button>
+      <button class="button">Add Link</button>
     </div>
   </div>
   <div class="column">
@@ -66,30 +78,32 @@
     <section class="section">
       <h2 class="title">My Apps</h2>
       <p class="subtitle">My OAuth apps.</p>
-      <article class="media">
-        <figure class="media-left">
-          <p class="image is-48x48">
-            <img src="{% static 'assets/images/application.png' %}" alt="App Image">
-          </p>
-        </figure>
-        <div class="media-content">
-          <div class="level is-mobile">
-            <div class="level-left">
-              <div class="level-item">
-                <div class="content">
-                  <h3 class="title is-4">App Name</h3>
-                  <p class="subtitle is-6">App Desc</p>
+      {% for client in clients %}
+        <article class="media">
+          <figure class="media-left">
+            <p class="image is-48x48">
+              <img src="{% static 'assets/images/application.png' %}" alt="App Image">
+            </p>
+          </figure>
+          <div class="media-content">
+            <div class="level is-mobile">
+              <div class="level-left">
+                <div class="level-item">
+                  <div class="content">
+                    <h3 class="title is-4">{{ client.name }}</h3>
+                    <p class="subtitle is-6">{{ client.get_desc }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="level-right">
+                <div class="level-item">
+                  <a href="{% url 'oauth:read' client.pk %}" class="button is-info">Go</a>
                 </div>
               </div>
             </div>
-            <div class="level-right">
-              <div class="level-item">
-                <button class="button is-info">Go</button>
-              </div>
-            </div>
           </div>
-        </div>
-      </article>
+        </article>
+      {% endfor %}
     </section>
   </div>
 </div>

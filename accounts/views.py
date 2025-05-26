@@ -115,7 +115,12 @@ def signout_post(request):
 
 @login_required
 def my_profile(request):
-    return render(request, 'accounts/my-profile.html')
+    context = {
+        'links': request.user.user_links.all(),
+        'using_apps': request.user.using_apps.all(),
+        'clients': request.user.client_apps.all(),
+    }
+    return render(request, 'accounts/my-profile.html', context)
 
 
 @anonymous
