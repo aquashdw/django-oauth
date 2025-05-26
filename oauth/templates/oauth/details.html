@@ -6,8 +6,9 @@
     <div class="level-left">
       <div class="level-item">
         <div>
-          <p class="title is-1">{{ client.name }} <button class="tag is-info" id="modal-open-button">Rename</button></p>
-          <p id="rename-result-msg" class="subtitle is-6 is-invisible">&nbsp;</p>
+          <p class="title is-1">{{ client.name }} <button class="tag is-info" id="modal-open-button">Edit</button></p>
+          <p class="subtitle">{{ client.get_desc }}</p>
+          <p id="edit-result-msg" class="subtitle is-6 is-invisible">&nbsp;</p>
         </div>
       </div>
     </div>
@@ -131,14 +132,14 @@
   <a class="button is-clickable is-danger" href="{% url 'oauth:delete' client.pk %}">Delete</a>
 </section>
 {% comment %} modal {% endcomment %}
-<div id="rename-client-modal" class="modal">
+<div id="edit-client-modal" class="modal">
   <div class="modal-background"></div>
   <div class="modal-content">
     <div class="box mx-3">
       <div class="level">
         <div class="level-left">
           <div class="level-item">
-            <p class="title is-4">Rename Client</p>
+            <p class="title is-4">Edit Client</p>
           </div>
         </div>
         <div class="level-right">
@@ -147,18 +148,52 @@
           </div>
         </div>
       </div>
-      
+      {% comment %} modal form {% endcomment %}
       <form class="mb-3" action="{% url 'oauth:update' client.pk %}" method="post">
         {% csrf_token %}
-        <div class="field has-addons">
-          <div class="control is-expanded">
-            <input class="input" type="text" name="name" required>
-          </div>
+        <div class="field">
+          <label for="name" class="label is-size=5">Name</label>
           <div class="control">
-            <button class="button is-info" type="input">Rename</button>
+            <input 
+              class="input"
+              type="text"
+              value="{{ client.name }}"
+              placeholder="Client name"
+              name="name"
+              maxlength="128"
+              autocapitalize="none"
+              autofocus
+              required
+              id="name"
+            >
+          </div>
+        </div>
+        <div class="field">
+          <label for="desc" class="label is-size=5">Description</label>
+          <div class="control">
+            <input 
+              class="input"
+              type="text"
+              {% if client.desc %}
+              value="{{ client.desc }}"
+              {% endif %}
+              placeholder="Description"
+              name="desc"
+              maxlength="128"
+              autocapitalize="none"
+              autofocus
+              id="desc"
+            >
+          </div>
+        </div>
+        <div class="field is-grouped">
+          <div class="control">
+            <input class="button is-clickable is-primary" type="submit" value="Edit">
+            <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="edit-profile-modal">Close</button>
           </div>
         </div>
       </form>
+
     </div>
   </div>
 </div>
@@ -166,9 +201,9 @@
 {% endblock content %}
 
 {% block script %}
-{% comment %} rename client {% endcomment %}
+{% comment %} edit client {% endcomment %}
 <script>
-const modal = document.getElementById('rename-client-modal')
+const modal = document.getElementById('edit-client-modal')
 
 const openModal = () => modal.classList.add('is-active')
 const closeModal = () => modal.classList.remove('is-active')
@@ -181,15 +216,15 @@ document.addEventListener('keydown', (event) => {
     closeModal();
   }
 });
-const renameSuccess = urlParams.get('rename')
+const editSuccess = urlParams.get('edit')
 const error = urlParams.get('errors')
-if (renameSuccess || error === 'clientname') {
-  const renameResultMsg = document.getElementById('rename-result-msg')
-  renameResultMsg.innerText = renameSuccess ? 'Rename Success!!!' : 'Rename Failed.'
-  renameResultMsg.classList.add(renameSuccess ? 'has-text-success' : 'has-text-danger')
-  renameResultMsg.classList.toggle('is-invisible')
+if (editSuccess || error === 'clientname') {
+  const editSuccessMsg = document.getElementById('edit-result-msg')
+  editSuccessMsg.innerText = editSuccess ? 'Edit Success!!!' : 'Edit Failed.'
+  editSuccessMsg.classList.add(editSuccess ? 'has-text-success' : 'has-text-danger')
+  editSuccessMsg.classList.toggle('is-invisible')
   setTimeout(() => {
-    renameResultMsg.classList.toggle('is-invisible')
+    editSuccessMsg.classList.toggle('is-invisible')
   }, 3000)
 }
 </script>

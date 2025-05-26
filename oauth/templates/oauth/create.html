@@ -26,7 +26,22 @@
         {% endif %}
       </p>
     </div>
-    <div class="field is-grouped">
+    <div class="field">
+      <label for="desc" class="label is-size-5">Description</label>
+      <div class="control">
+        <input 
+          class="input"
+          type="text"
+          placeholder="Description"
+          name="desc"
+          maxlength="128"
+          autocapitalize="none"
+          autofocus
+          id="desc"
+        >
+      </div>
+    </div>
+    <div class="field is-grouped mt-4">
       <div class="control">
         <input class="button is-clickable is-primary" type="submit">
         <a class="button is-clickable is-warning" href="{% url 'oauth:index' %}">Back</a>

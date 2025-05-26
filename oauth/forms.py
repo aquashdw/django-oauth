@@ -6,7 +6,7 @@ from oauth.models import OAuthClient, CallbackUrl
 class OAuthClientForm(forms.ModelForm):
     class Meta:
         model = OAuthClient
-        fields = ('name',)
+        fields = ('name', 'desc',)
 
 
 class CallbackUrlForm(forms.ModelForm):
