@@ -11,8 +11,8 @@
       <h1 class="title is-4">{{ user.get_nickname }}</h1>
       <p class="subtitle is-6">{{ user }}</p>
       {% if user.bio %}
-        <h2 class="title is-5">Bio</h2>
-        <p class="subtitle is-6">Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
+        <h2 class="title is-5">Who I am</h2>
+        <p class="subtitle is-6">{{ user.bio }}</p>
       {% endif %}
 
       {% for link in links %}
@@ -37,8 +37,14 @@
         <p class="title is-6">Blog</p>
         <p class="subtitle is-6"><a href="#">https://velog.io/@aquashdw/posts</a></p>
       </div> {% endcomment %}
-      <button class="button">Edit</button>
-      <button class="button">Add Link</button>
+      <button class="button open-modal-btn" data-modal-target="edit-profile-modal">Edit</button>
+      <button class="button open-modal-btn" data-modal-target="add-link-modal">Add Link</button>
+    </div>
+    <div id="message-container" class="block mx-4 is-hidden">
+      <article id="message" class="message">
+        <div class="message-body">
+          <p id="message-text"></p>
+      </article>
     </div>
   </div>
   <div class="column">
@@ -107,4 +113,209 @@
     </section>
   </div>
 </div>
+{% comment %} edit profile modal {% endcomment %}
+<div id="edit-profile-modal" class="modal">
+  <div class="modal-background" data-modal-target="edit-profile-modal"></div>
+  <div class="modal-content">
+    <div class="box mx-3">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p class="title is-4">Edit Profile</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <button class="delete close-modal-btn" data-modal-target="edit-profile-modal" aria-label="close"></button>
+          </div>
+        </div>
+      </div>
+      {% comment %} modal form {% endcomment %}
+      <form class="mb-3" action="{% url 'accounts:edit_profile' %}" method="post">
+        {% csrf_token %}
+        <div class="field">
+          <label for="nickname" class="label is-size=5">Nickname</label>
+          <div class="control">
+            <input 
+              class="input"
+              type="text"
+              {% if user.nickname %}
+              value="{{ user.nickname }}"
+              {% endif %}
+              placeholder="If left blank, your email will be displayed."
+              name="nickname"
+              maxlength="16"
+              autocapitalize="none"
+              autofocus
+              id="nickname"
+            >
+          </div>
+        </div>
+        <div class="field">
+          <label for="bio" class="label is-size=5">Who I am</label>
+          <div class="control">
+            <input 
+              class="input"
+              type="text"
+              {% if user.bio %}
+              value="{{ user.bio }}"
+              {% endif %}
+              placeholder="Who I am in one sentence"
+              name="bio"
+              maxlength="64"
+              autocapitalize="none"
+              autofocus
+              id="bio"
+            >
+          </div>
+        </div>
+        <div class="field is-grouped">
+          <div class="control">
+            <input class="button is-clickable is-primary" type="submit" value="Edit">
+            <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="edit-profile-modal">Close</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% comment %} add link modal {% endcomment %}
+<div id="add-link-modal" class="modal">
+  <div class="modal-background" data-modal-target="add-link-modal"></div>
+  <div class="modal-content">
+    <div class="box mx-3">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p class="title is-4">Add Link</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <button class="delete close-modal-btn" data-modal-target="add-link-modal" aria-label="close"></button>
+          </div>
+        </div>
+      </div>
+      {% comment %} modal form {% endcomment %}
+      <form class="mb-3" action="{% url 'accounts:add_link' %}" method="post">
+        {% csrf_token %}
+        <div class="field">
+          <label for="link-name" class="label is-size=5">Link Name</label>
+          <div class="control">
+            <input 
+              class="input"
+              type="text"
+              placeholder="What is this link?"
+              name="name"
+              maxlength="32"
+              autocapitalize="none"
+              autofocus
+              required
+              id="link-name"
+            >
+          </div>
+        </div>
+        <div class="field">
+          <label for="link-url" class="label is-size=5">Link URL</label>
+          <div class="control">
+            <input 
+              class="input"
+              type="url"
+              placeholder="Link"
+              name="url"
+              maxlength="64"
+              autocapitalize="none"
+              autofocus
+              id="link-url"
+            >
+          </div>
+        </div>
+        <div class="field is-grouped">
+          <div class="control">
+            <input class="button is-clickable is-primary" type="submit" value="Edit">
+            <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="edit-profile-modal">Close</button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
 {% endblock content %}
+
+{% block script %}
+{% comment %} modal control {% endcomment %}
+<script>
+const openModal = (modalId) => document.getElementById(modalId).classList.add('is-active')
+const closeModal = (modalId) => document.getElementById(modalId).classList.remove('is-active')
+
+document.querySelectorAll('.open-modal-btn')
+  .forEach(openBtn => openBtn.addEventListener('click', () => {
+    openModal(openBtn.dataset.modalTarget)
+}))
+
+document.querySelectorAll('.close-modal-btn, .modal-background')
+  .forEach(closeElem => closeElem.addEventListener('click', () => {
+    console.log(closeElem.dataset.modalTarget)
+    closeModal(closeElem.dataset.modalTarget)
+}))
+</script>
+
+{% comment %} message {% endcomment %}
+<script>
+  const messageContainer = document.getElementById('message-container')
+  const message = document.getElementById('message')
+  const messageText = document.getElementById('message-text')
+
+  const edit = urlParams.get('edit')
+  if (edit) {
+    if (edit === 'success') {
+      messageContainer.classList.remove('is-hidden')
+      message.classList.add('is-success')
+      messageText.innerText = 'Edit success'
+    }
+    else {
+      messageContainer.classList.remove('is-hidden')
+      message.classList.add('is-danger')
+      messageText.innerText = 'Edit failed'
+    }
+  }
+
+  const addLink = urlParams.get('addlink')
+  if (addLink) {
+    if (addLink === 'success') {
+      messageContainer.classList.remove('is-hidden')
+      message.classList.add('is-success')
+      messageText.innerText = 'Link added'
+    }
+    else {
+      messageContainer.classList.remove('is-hidden')
+      message.classList.add('is-danger')
+      messageText.innerText = 'Link add failed'
+    }
+  }
+
+  const removeLink = urlParams.get('removelink')
+  if (removeLink) {
+    if (removeLink === 'success') {
+      messageContainer.classList.remove('is-hidden')
+      message.classList.add('is-success')
+      messageText.innerText = 'Link removed'
+    }
+    else {
+      messageContainer.classList.remove('is-hidden')
+      message.classList.add('is-danger')
+      messageText.innerText = 'Link remove failed'
+    }
+  }
+
+  if (!messageContainer.classList.contains('is-hidden')) {
+    setTimeout(() => {
+      messageContainer.classList.toggle('is-hidden')
+    }, 3000)
+  }
+</script>
+
+{% endblock script %}

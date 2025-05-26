@@ -7,9 +7,10 @@ from django.core.cache import cache
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_safe
+from django.views.decorators.http import require_safe, require_POST
 
-from accounts.forms import UserCreationForm, AuthenticationForm, SendVerificationForm
+from accounts.forms import UserCreationForm, AuthenticationForm, SendVerificationForm, EditProfileForm, AddLinkForm
+from accounts.models import UserLinks
 from accounts.rabbit import send_mail
 from django_oauth.utils import anonymous, extract_form_errors, redirect_with_nq
 
@@ -121,6 +122,35 @@ def my_profile(request):
         'clients': request.user.client_apps.all(),
     }
     return render(request, 'accounts/my-profile.html', context)
+
+
+@require_POST
+@login_required
+def edit_profile(request):
+    form = EditProfileForm(request.POST)
+    if form.is_valid():
+        user = request.user
+        user.nickname = form.cleaned_data['nickname']
+        user.bio = form.cleaned_data['bio']
+        user.save()
+        return redirect_with_nq('accounts:my_profile', {'edit': 'success'})
+    return redirect_with_nq('accounts:my_profile', {'edit': 'fail'})
+
+
+@login_required
+def add_link(request):
+    form = AddLinkForm(request.POST)
+    if form.is_valid():
+        user = request.user
+        name = form.cleaned_data['name']
+        url = form.cleaned_data['url']
+        UserLinks(user=user, name=name, url=url).save()
+        return redirect_with_nq('accounts:my_profile', {'addlink': 'success'})
+    return redirect_with_nq('accounts:my_profile', {'addlink': 'fail'})
+
+
+def delete_link(request):
+    pass
 
 
 @anonymous

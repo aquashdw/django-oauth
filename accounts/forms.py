@@ -6,6 +6,8 @@ from django.forms import ValidationError
 from django.forms.utils import ErrorList
 
 User = get_user_model()
+
+
 class UserCreationForm(_UserCreationForm):
     error_messages = {
         **_UserCreationForm.error_messages,
@@ -61,3 +63,13 @@ class SendVerificationForm(forms.Form):
 
         self.user = user
         return email
+
+
+class EditProfileForm(forms.Form):
+    nickname = forms.CharField(max_length=16, required=False)
+    bio = forms.CharField(max_length=64, required=False)
+
+
+class AddLinkForm(forms.Form):
+    name = forms.CharField(max_length=32)
+    url = forms.URLField(max_length=256)
