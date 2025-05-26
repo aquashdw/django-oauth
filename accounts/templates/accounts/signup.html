@@ -9,18 +9,18 @@
       <div class="field">
         <label for="email" class="label is-size-4">Email</label>
         <div class="control">
-          <input 
-            class="input"
-            type="email" 
-            placeholder="Email" 
-            name="email" 
-            maxlength="150"
-            autocapitalize="none"
-            autocomplete="username" 
-            autofocus 
-            required 
-            id="email" 
-            value="{% if email %}{{email}}{% endif %}"
+          <input
+              class="input"
+              type="email"
+              placeholder="Email"
+              name="email"
+              maxlength="150"
+              autocapitalize="none"
+              autocomplete="username"
+              autofocus
+              required
+              id="email"
+              value="{% if email %}{{email}}{% endif %}"
           >
         </div>
         <p class="help is-danger">
@@ -32,14 +32,14 @@
       <div class="field">
         <label for="password1" class="label is-size-4">Password</label>
         <div class="control">
-          <input 
-            class="input" 
-            type="password"
-            placeholder="Password"
-            name="password1" 
-            autocomplete="new-password"
-            required 
-            id="password1"
+          <input
+              class="input"
+              type="password"
+              placeholder="Password"
+              name="password1"
+              autocomplete="new-password"
+              required
+              id="password1"
           >
         </div>
         <p class="help is-danger">
@@ -53,14 +53,14 @@
       <div class="field">
         <label for="password2" class="label is-size-4">Password Confirm</label>
         <div class="control">
-          <input 
-          class="input" 
-          type="password"
-          placeholder="Password Check"
-          name="password2" 
-          autocomplete="new-password" 
-          required 
-          id="password2">
+          <input
+              class="input"
+              type="password"
+              placeholder="Password Check"
+              name="password2"
+              autocomplete="new-password"
+              required
+              id="password2">
         </div>
       </div>
       <div class="field is-grouped">
@@ -76,13 +76,6 @@
 
 {% block script %}
 <script>
-  const backButton = document.getElementById('back-button').addEventListener('click', () => {
-    const referrer = document.referrer
-    if (referrer) {
-      location.assign(referrer)
-    } else {
-      location.assign("{% url 'accounts:index' %}")
-    }
-  })
+  const backButton = document.getElementById('back-button').addEventListener('click', () => history.back())
 </script>
 {% endblock script %}

@@ -61,13 +61,6 @@
 
 {% block script %}
 <script>
-  const backButton = document.getElementById('back-button').addEventListener('click', () => {
-    const referrer = document.referrer
-    if (referrer) {
-      location.assign(referrer)
-    } else {
-      location.assign("{% url 'accounts:index' %}")
-    }
-  })
+  const backButton = document.getElementById('back-button').addEventListener('click', () => history.back())
 </script>
 {% endblock script %}

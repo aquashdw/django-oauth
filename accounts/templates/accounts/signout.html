@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="m-6 p-6 box is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
+  <h1 class="title">Signout Successful</h1>
+  <p class="subtitle">You will be redirected soon...</p>
+</section>
+{% endblock content %}
+
+{% block script %}
+<script>
+  setTimeout(() => {
+    location.assign("{% url 'accounts:signin' %}")
+  }, 1500)
+</script>
+{% endblock script %}

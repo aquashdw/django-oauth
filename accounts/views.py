@@ -101,11 +101,16 @@ def signin(request):
     return render(request, 'accounts/signin.html', context)
 
 
-@login_required
 def signout(request):
     if request.method == 'POST':
-        logout(request)
-    return redirect('accounts:index')
+        return signout_post(request)
+    return render(request, 'accounts/signout.html')
+
+
+@login_required
+def signout_post(request):
+    logout(request)
+    return redirect('accounts:signout')
 
 
 @login_required
