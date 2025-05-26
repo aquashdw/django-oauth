@@ -22,16 +22,16 @@
     <thead>
       <th>Name</th>
       <th>Status</th>
-      <th>Client ID</th>
-      <th>Client Secret</th>
+      <th class="is-hidden-mobile">Client ID</th>
+      <th class="is-hidden-mobile">Client Secret</th>
     </thead>
     <tbody>
       {% for client in clients %}
       <tr>
         <th><a href="{% url 'oauth:read' client.pk %}">{{ client.name }}</a></th>
         <td>{{ client.get_status_display }}</td>
-        <td><code>{{ client.client_id }}</code> <button data-dj-value="{{ client.client_id }}" class="copy-btn tag">Copy</button></td>
-        <td><button data-dj-value="{{ client.client_secret }}" class="copy-btn tag">Copy</button></td>
+        <td class="is-hidden-mobile"><code>{{ client.client_id }}</code> <button data-dj-value="{{ client.client_id }}" class="copy-btn tag">Copy</button></td>
+        <td class="is-hidden-mobile"><button data-dj-value="{{ client.client_secret }}" class="copy-btn tag">Copy</button></td>
       </tr>
       {% endfor %}
     </tbody>

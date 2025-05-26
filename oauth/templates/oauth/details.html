@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
+{% load mask %}
+
 
 {% block content %}
-<section class="block mt-6 px-6">
-  <div class="level is-mobile">
+<section class="mt-6 px-6">
+  <div class="title level is-mobile mb-1">
     <div class="level-left">
       <div class="level-item">
         <div>
@@ -12,10 +14,30 @@
       </div>
     </div>
     <div class="level-right">
-      <a href="{% url 'oauth:index' %}">Back</a>
+      <a class="button is-info" href="{% url 'oauth:index' %}">Back</a>
     </div>
   </div>
-  <p class="subtitle">Status: <span class="tag is-medium is-warning">{{ client.get_status_display }}</span></p>
+  <div class="level is-mobile">
+    <div class="level-left">
+      <div class="level-item">
+        <p class="subtitle">Status: <span class="tag is-medium is-warning">{{ client.get_status_display }}</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="level is-mobile">
+    <div class="level-left">
+      <div class="level-item">
+        <p class="subtitle">Client ID: <code class="is-hidden-mobile">{{ client.client_id }}</code> <button data-dj-value="{{ client.client_id }}" class="copy-btn tag">Copy</button></p>
+      </div>
+    </div>
+  </div>
+  <div class="level is-mobile">
+    <div class="level-left">
+      <div class="level-item">
+        <p class="subtitle">Client Secret: <code id="client-secret" class="is-hidden-mobile" data-dj-value="{{ client.client_secret }}">******* Click to reveal ********</code> <button data-dj-value="{{ client.client_secret }}" class="copy-btn tag">Copy</button></p>
+      </div>
+    </div>
+  </div>
 </section>
 <hr>
 <section class="columns">
@@ -236,5 +258,24 @@ if (testuser) {
     testuserMsg.classList.toggle('is-invisible')
   }, 3000)
 }
+</script>
+
+{% comment %} client keys {% endcomment %}
+<script>
+document.querySelectorAll('.copy-btn').forEach(button => button.addEventListener('click', (event) => {
+  navigator.clipboard.writeText(event.target.dataset.djValue)
+  event.target.innerText = 'Copied!'
+  setTimeout(() => {
+    event.target.innerText = 'Copy'
+  }, 3000)
+}))
+
+let clientSecretHolder = document.getElementById('client-secret')
+let masked = true
+clientSecretHolder.addEventListener('click', (event) => {
+  if (masked) clientSecretHolder.innerText = clientSecretHolder.dataset.djValue
+  else clientSecretHolder.innerText = '******* Click to reveal ********'
+  masked = !masked
+})
 </script>
 {% endblock script %}
