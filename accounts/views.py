@@ -149,8 +149,13 @@ def add_link(request):
     return redirect_with_nq('accounts:my_profile', {'addlink': 'fail'})
 
 
-def delete_link(request):
-    pass
+@login_required
+def delete_link(request, link_pk):
+    link = UserLinks.objects.get(pk=link_pk)
+    if request.user != link.user:
+        return redirect_with_nq('accounts:my_profile', {'removelink': 'fail'})
+    link.delete()
+    return redirect_with_nq('accounts:my_profile', {'removelink': 'success'})
 
 
 @anonymous

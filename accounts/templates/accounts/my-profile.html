@@ -16,27 +16,27 @@
       {% endif %}
 
       {% for link in links %}
-      <div class="mb-4">
-        <p class="title is-6">{{ link.name }}</p>
-        <p class="subtitle is-6"><a href="{{ link.url }}">{{ link.url }}</a></p>
+      <div class="mb-4 level">
+        <div class="level-left">
+          <div class="level-item">
+            <div class="content">
+              <p class="title is-6">{{ link.name }}</p>
+              <p class="subtitle is-6"><a href="{{ link.url }}">{{ link.url }}</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <form action="{% url 'accounts:delete_link' link.pk %}" method="post">
+              {% csrf_token %}
+              <button class="delete" aria-label="remove"></button>
+            </form>
+          </div>
+        </div>
       </div>
       {% empty %}
       <p>No links</p>
       {% endfor %}
-      {% comment %} <div class="mb-4">
-        <p class="title is-6">Linkedin</p>
-        <p class="subtitle is-6"><a href="#">https://www.linkedin.com/in/jeeho-park-191241185/</a></p>
-      </div>
-
-      <div class="mb-4">
-        <p class="title is-6">Github</p>
-        <p class="subtitle is-6"><a href="#">https://github.com/aquashdw</a></p>
-      </div>
-
-      <div class="mb-4">
-        <p class="title is-6">Blog</p>
-        <p class="subtitle is-6"><a href="#">https://velog.io/@aquashdw/posts</a></p>
-      </div> {% endcomment %}
       <button class="button open-modal-btn" data-modal-target="edit-profile-modal">Edit</button>
       <button class="button open-modal-btn" data-modal-target="add-link-modal">Add Link</button>
     </div>
