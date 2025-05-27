@@ -40,10 +40,10 @@
       <button class="button open-modal-btn" data-modal-target="edit-profile-modal">Edit</button>
       <button class="button open-modal-btn" data-modal-target="add-link-modal">Add Link</button>
     </div>
-    <div id="message-container" class="block mx-4 is-hidden">
-      <article id="message" class="message">
+    <div id="profile-message-container" class="block mx-4 is-hidden">
+      <article class="message">
         <div class="message-body">
-          <p id="message-text"></p>
+          <p class="message-text"></p>
       </article>
     </div>
   </div>
@@ -51,33 +51,41 @@
     <section class="section">
       <h2 class="title">Using Services</h2>
       <p class="subtitle">Services that can use your info.</p>
-      <article class="media">
-        <figure class="media-left">
-          <p class="image is-48x48">
-            <img src="{% static 'assets/images/application.png' %}" alt="App Image">
-          </p>
-        </figure>
-        <div class="media-content">
-          <div class="level is-mobile">
-            <div class="level-left">
-              <div class="level-item">
-                <div class="content">
-                  <h3 class="title is-4">App Name</h3>
-                  <p class="subtitle is-6">App Desc</p>
+      {% for app in using_apps %}
+        <article class="media">
+          <figure class="media-left">
+            <p class="image is-48x48">
+              <img src="{% static 'assets/images/application.png' %}" alt="App Image">
+            </p>
+          </figure>
+          <div class="media-content">
+            <div class="level is-mobile">
+              <div class="level-left">
+                <div class="level-item">
+                  <div class="content">
+                    <h3 class="title is-4">{{ app.name }}</h3>
+                    <p class="subtitle is-6">{{ app.desc }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="level-right">
+                <div class="level-item">
+                  <a class="button is-info">Go</a>
+                </div>
+                <div class="level-item">
+                  <form action="{% url 'oauth:revoke' app.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="button is-danger">Revoke</button>
+                  </form>
                 </div>
               </div>
             </div>
-            <div class="level-right">
-              <div class="level-item">
-                <button class="button is-info">Go</button>
-              </div>
-              <div class="level-item">
-                <button class="button is-danger">Revoke</button>
-              </div>
-            </div>
           </div>
-        </div>
-      </article>
+        </article>
+      {% empty %}
+        <h3 class="is-size-5 has-text-warning">You are not using any apps!</h3>
+      {% endfor %}
+      <p id="revoke-message-text" class="has-text-warning is-hidden"></p>
       <p>If you revoke, you may need to re-login at the target service.</p>
     </section>
     <hr class="my-2">
@@ -109,6 +117,8 @@
             </div>
           </div>
         </article>
+      {% empty %}
+        <h3 class="is-size-5 has-text-warning">You do not have any OAuth Apps!</h3>
       {% endfor %}
     </section>
   </div>
@@ -263,21 +273,20 @@ document.querySelectorAll('.close-modal-btn, .modal-background')
 }))
 </script>
 
-{% comment %} message {% endcomment %}
+{% comment %} edit message {% endcomment %}
 <script>
-  const messageContainer = document.getElementById('message-container')
-  const message = document.getElementById('message')
-  const messageText = document.getElementById('message-text')
+  const messageContainer = document.getElementById('profile-message-container')
+  const message = messageContainer.querySelector('.message')
+  const messageText = messageContainer.querySelector('.message-text')
 
   const edit = urlParams.get('edit')
   if (edit) {
+    messageContainer.classList.remove('is-hidden')
     if (edit === 'success') {
-      messageContainer.classList.remove('is-hidden')
       message.classList.add('is-success')
       messageText.innerText = 'Edit success'
     }
     else {
-      messageContainer.classList.remove('is-hidden')
       message.classList.add('is-danger')
       messageText.innerText = 'Edit failed'
     }
@@ -285,13 +294,12 @@ document.querySelectorAll('.close-modal-btn, .modal-background')
 
   const addLink = urlParams.get('addlink')
   if (addLink) {
+    messageContainer.classList.remove('is-hidden')
     if (addLink === 'success') {
-      messageContainer.classList.remove('is-hidden')
       message.classList.add('is-success')
       messageText.innerText = 'Link added'
     }
     else {
-      messageContainer.classList.remove('is-hidden')
       message.classList.add('is-danger')
       messageText.innerText = 'Link add failed'
     }
@@ -299,13 +307,12 @@ document.querySelectorAll('.close-modal-btn, .modal-background')
 
   const removeLink = urlParams.get('removelink')
   if (removeLink) {
+    messageContainer.classList.remove('is-hidden')
     if (removeLink === 'success') {
-      messageContainer.classList.remove('is-hidden')
       message.classList.add('is-success')
       messageText.innerText = 'Link removed'
     }
     else {
-      messageContainer.classList.remove('is-hidden')
       message.classList.add('is-danger')
       messageText.innerText = 'Link remove failed'
     }
@@ -314,6 +321,19 @@ document.querySelectorAll('.close-modal-btn, .modal-background')
   if (!messageContainer.classList.contains('is-hidden')) {
     setTimeout(() => {
       messageContainer.classList.toggle('is-hidden')
+    }, 3000)
+  }
+</script>
+
+{% comment %} revoke message {% endcomment %}
+<script>
+  const revokeMsgContainer = document.getElementById('revoke-message-text')
+  const revoke = urlParams.get('revoke')
+  if (revoke) {
+    revokeMsgContainer.classList.toggle('is-hidden')
+    revokeMsgContainer.innerText = revoke !== 'fail' ? `Revoked ${revoke}` : 'Revoke failed'
+    setTimeout(() => {
+      revokeMsgContainer.classList.toggle('is-hidden')
     }, 3000)
   }
 </script>

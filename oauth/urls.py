@@ -23,6 +23,7 @@ urlpatterns = [
 
     # oauth
     path('authorize/', authorize_views.authorize, name='authorize'),
+    path('revoke/<int:client_pk>/', authorize_views.revoke, name='revoke'),
     path('token/', authorize_views.token, name='token'),
     path('user-info/', authorize_views.get_user_info, name='user_info'),
     path('refresh/', authorize_views.refresh, name='refresh'),

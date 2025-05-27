@@ -78,7 +78,7 @@
         </tbody>
       </table>
       {% else %}
-      <p class="is-size-5 has-text-warning">No Callback URLs set</h3>
+      <h3 class="is-size-5 has-text-warning">No Callback URLs set</h3>
       {% endif %}
       <p id="callback-msg" class="is-invisible"></p>
     </section>
@@ -121,7 +121,7 @@
         </tbody>
       </table>
       {% else %}
-      <p class="is-size-5 has-text-warning">No testers invited</h3>
+      <h3 class="is-size-5 has-text-warning">No testers invited</h3>
       {% endif %}
       <p id="testuser-msg" class="is-invisible"></p>
     </section>
@@ -144,7 +144,7 @@
         </div>
         <div class="level-right">
           <div class="level-item">
-            <button id="modal-close-button" class="delete" aria-label="close"></button>
+            <button id="modal-close-button" class="delete close-modal-btn" aria-label="close"></button>
           </div>
         </div>
       </div>
@@ -189,7 +189,7 @@
         <div class="field is-grouped">
           <div class="control">
             <input class="button is-clickable is-primary" type="submit" value="Edit">
-            <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="edit-profile-modal">Close</button>
+            <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="edit-client-modal">Close</button>
           </div>
         </div>
       </form>
@@ -210,7 +210,7 @@ const closeModal = () => modal.classList.remove('is-active')
 
 document.getElementById('modal-open-button').addEventListener('click', openModal)
 document.querySelector('.modal-background').addEventListener('click', closeModal)
-document.getElementById('modal-close-button').addEventListener('click', closeModal)
+document.querySelectorAll('.close-modal-btn').forEach(btn => btn.addEventListener('click', closeModal))
 document.addEventListener('keydown', (event) => {
   if(event.key === "Escape") {
     closeModal();

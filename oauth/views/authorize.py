@@ -16,6 +16,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from django_oauth.utils import redirect_with_nq
 from oauth.models import OAuthClient, CallbackUrl
 from oauth.serializer import OAuthTokenRequestSerializer
 
@@ -72,6 +73,17 @@ def authorize(request):
     if request.GET.get('state'):
         params['state'] = request.GET.get('state')
     return redirect(f'{callback_url}?{urlencode(params)}')
+
+
+@login_required
+def revoke(request, client_pk):
+    client = OAuthClient.objects.get(pk=client_pk)
+    if client.users.contains(request.user):
+        client.users.remove(request.user)
+        client.save()
+    else:
+        return redirect_with_nq('accounts:my_profile', {'revoke': 'fail'})
+    return redirect_with_nq('accounts:my_profile', {'revoke': client.name})
 
 
 @api_view(['POST'])

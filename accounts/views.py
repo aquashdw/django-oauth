@@ -13,6 +13,7 @@ from accounts.forms import UserCreationForm, AuthenticationForm, SendVerificatio
 from accounts.models import UserLinks
 from accounts.rabbit import send_mail
 from django_oauth.utils import anonymous, extract_form_errors, redirect_with_nq
+from oauth.models import OAuthClient
 
 
 def index(request):
@@ -119,7 +120,7 @@ def my_profile(request):
     context = {
         'links': request.user.user_links.all(),
         'using_apps': request.user.using_apps.all(),
-        'clients': request.user.client_apps.all(),
+        'clients': request.user.client_apps.exclude(status=OAuthClient.DELETED),
     }
     return render(request, 'accounts/my-profile.html', context)
 
