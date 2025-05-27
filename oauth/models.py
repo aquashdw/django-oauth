@@ -5,10 +5,16 @@ from django.db import models
 class OAuthClient(models.Model):
     DEVELOPMENT = 'DEV'
     PRODUCTION = 'PROD'
+    REVIEWING = 'REV'
+    REJECTED = 'REJ'
+    CLOSED = 'CLO'
     DELETED = 'DEL'
     STATUS_CHOICES = [
         (DEVELOPMENT, 'Development'),
         (PRODUCTION, 'Production'),
+        (REVIEWING, 'Under Review'),
+        (REJECTED, 'Rejected'),
+        (CLOSED, 'Closed'),
         (DELETED, 'Deleted'),
     ]
 

@@ -19,7 +19,17 @@
   <div class="level is-mobile">
     <div class="level-left">
       <div class="level-item">
-        <p class="subtitle">Status: <span class="tag is-medium is-warning">{{ client.get_status_display }}</span></p>
+        <p class="subtitle">
+          Status: <span class="tag is-medium is-warning">{{ client.get_status_display }}</span>
+          {% if client.status == 'REJ' or client.status == 'CLO' %}
+          <button class="tag open-modal-btn" data-modal-target="reason-modal">Reasons</button>
+          {% elif client.status == 'PROD' %}
+          <button class="tag open-modal-btn" id="close-button" data-modal-target="close-modal">Close Temporarily</button>
+          {% endif %}
+          {% if client.status != 'DEL' or client.status != 'PROD' %}
+          <button class="tag open-modal-btn" id="request-button" data-modal-target="request-modal">Request Open</button>
+          {% endif %}
+        </p>
       </div>
     </div>
   </div>
@@ -158,9 +168,9 @@
 <section class="block px-6">
   <a class="button is-clickable is-danger" href="{% url 'oauth:delete' client.pk %}">Delete</a>
 </section>
-{% comment %} modal {% endcomment %}
+{% comment %} edit-client modal {% endcomment %}
 <div id="edit-client-modal" class="modal">
-  <div class="modal-background"></div>
+  <div class="modal-background" data-modal-target="edit-client-modal"></div>
   <div class="modal-content">
     <div class="box mx-3">
       <div class="level">
@@ -220,7 +230,69 @@
           </div>
         </div>
       </form>
+    </div>
+  </div>
+</div>
 
+{% comment %} request modal {% endcomment %}
+<div id="request-modal" class="modal">
+  <div class="modal-background" data-modal-target="request-modal"></div>
+  <div class="modal-content">
+    <div class="box mx-3">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p class="title is-4">Request Open</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <button class="delete close-modal-btn" data-modal-target="request-modal" aria-label="close"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% comment %} reason modal {% endcomment %}
+<div id="reason-modal" class="modal">
+  <div class="modal-background" data-modal-target="reason-modal"></div>
+  <div class="modal-content">
+    <div class="box mx-3">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p class="title is-4">Reject Reasons</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <button class="delete close-modal-btn" data-modal-target="reason-modal" aria-label="close"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% comment %} close modal {% endcomment %}
+<div id="close-modal" class="modal">
+  <div class="modal-background" data-modal-target="close-modal"></div>
+  <div class="modal-content">
+    <div class="box mx-3">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p class="title is-4">Close</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <button class="delete close-modal-btn" data-modal-target="close-modal" aria-label="close"></button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
