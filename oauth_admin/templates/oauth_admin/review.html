@@ -70,7 +70,7 @@
 </section>
 <hr>
 <section class="section px-6">
-  <h2 class="title">Review</h2>
+  <h2 class="title">Review <span id="review-message" class="subtitle is-6 is-hidden"></span></h2>
   <form method="post">
     {% csrf_token %}
     <div class="field">
@@ -99,6 +99,27 @@
 <section class="section px-6">
   <h2 class="title">Previous Reviews</h2>
   {% if reviews %}
+    {% for review in reviews %}
+      <article class="media">
+        <div class="media-content">
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <div class="content">
+                  <p>{{ review.reason }}</p>
+                  <p>{{ review.created_at }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <span class="tag is-medium">{{ review.get_decision_display }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
   {% else %}
   <h3 class="is-size-5 has-text-warning">No past reviews</h3>
   {% endif %}
@@ -140,5 +161,21 @@
       select.classList.add('is-success')
     }
   })
+</script>
+
+{% comment %} review result {% endcomment %}
+<script>
+  const review = urlParams.get('review')
+  if (review) {
+    const reviewMessage = document.getElementById('review-message')
+    if (review === 'reason') {
+      reviewMessage.innerText = 'To reject, reason must be filled'
+      reviewMessage.classList.remove('is-hidden')
+      reviewMessage.classList.add('has-text-warning')
+    }
+    setTimeout(() => {
+      reviewMessage.classList.add('is-hidden')
+    }, 3000)
+  }
 </script>
 {% endblock script %}

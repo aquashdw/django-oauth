@@ -2,7 +2,9 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch
 from django.shortcuts import render, get_object_or_404
 
+from django_oauth.utils import redirect_with_nq
 from oauth.models import OAuthClient
+from oauth_admin.forms import ReviewForm
 
 
 def superuser_required(view_func):
@@ -33,6 +35,18 @@ def review(request, client_pk):
         ),
         pk=client_pk
     )
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.client = client
+            instance.save()
+            client.status = instance.decision
+            client.save()
+            return redirect_with_nq('oauth_admin:index', {'review': 'success'})
+        return redirect_with_nq('oauth_admin:review', {'review': 'reason'}, client_pk)
+
     context = {
         'client': client,
         'callback_urls': client.callback_urls.all(),

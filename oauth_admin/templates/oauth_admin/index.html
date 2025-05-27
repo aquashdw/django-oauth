@@ -6,7 +6,7 @@
     <div class="level-left">
       <div class="level-item">
         <div>
-          <p class="is-invisible">&nbsp;</p>
+          <p id="review-message" class="is-invisible">&nbsp;</p>
           <h1 class="title">OAuth Admin Console</h1>
           <p class="subtitle">Check user application reviews</p>
         </div>
@@ -38,7 +38,20 @@
 </section>
 {% endblock content %}
 {% block script %}
+
+{% comment %} review result {% endcomment %}
 <script>
-  
+  const review = urlParams.get('review')
+  if (review) {
+    const reviewMessage = document.getElementById('review-message')
+    if (review === 'success') {
+      reviewMessage.innerText = 'Review submitted'
+      reviewMessage.classList.remove('is-invisible')
+      reviewMessage.classList.add('has-text-info')
+    }
+    setTimeout(() => {
+      reviewMessage.classList.add('is-invisible')
+    }, 3000)
+  }
 </script>
 {% endblock script %}
