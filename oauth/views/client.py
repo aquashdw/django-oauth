@@ -178,6 +178,8 @@ def remove_callback(request, pk, callback_pk):
     client = get_object_or_404(OAuthClient, pk=pk)
     if request.user != client.owner:
         raise PermissionDenied
+    if client.callback_urls.count() == 1:
+        return redirect_with_nq('oauth:read', {'callback': 'lasturl'}, pk)
     callback = get_object_or_404(CallbackUrl, pk=callback_pk)
     callback.delete()
     return redirect_with_nq('oauth:read', {'callback': 'remove'}, pk)
@@ -235,7 +237,7 @@ def request_review(request, pk):
     if client.status == OAuthClient.PRODUCTION or client.status == OAuthClient.DELETED:
         raise BadRequest('bad state')
 
-    if client.callback_urls.count() == 0:
+    if client.callback_urls.count() == 0 or not client.entrypoint:
         return redirect_with_nq('oauth:read', {'edit': 'review-fail'}, pk)
 
     client.status = OAuthClient.REVIEWING

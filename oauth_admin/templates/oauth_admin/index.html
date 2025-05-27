@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section block">
+  <div class="level">
+    <div class="level-left">
+      <div class="level-item">
+        <div>
+          <p class="is-invisible">&nbsp;</p>
+          <h1 class="title">OAuth Admin Console</h1>
+          <p class="subtitle">Check user application reviews</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr>
+<section class="section table-container">
+  <table class="table is-hoverable is-fullwidth has-text-centered">
+    <thead>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Entrypoint</th>
+    </thead>
+    <tbody>
+      {% for client in clients %}
+      <tr>
+        <th><a href="{% url 'oauth_admin:review' client.pk %}">{{ client.name }}</a></th>
+        <td>{{ client.desc }}</td>
+        <td><a href="{{ client.get_entry }}">{{ client.get_entry }}</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if not clients|length %}
+  <p class="p-5 is-size-5 has-text-info">No Requests yet</p>
+  {% endif %}
+</section>
+{% endblock content %}
+{% block script %}
+<script>
+  
+</script>
+{% endblock script %}

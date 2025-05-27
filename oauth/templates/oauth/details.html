@@ -20,7 +20,7 @@
     <div class="level-left">
       <div class="level-item">
         <p class="subtitle">
-          Status: <span 
+          <strong>Status: </strong><span 
             class="
               tag 
               is-medium
@@ -50,14 +50,14 @@
   <div class="level is-mobile">
     <div class="level-left">
       <div class="level-item">
-        <p class="subtitle">Client ID: <code class="is-hidden-mobile">{{ client.client_id }}</code> <button data-dj-value="{{ client.client_id }}" class="copy-btn tag">Copy</button></p>
+        <p class="subtitle"><strong>Client ID: </strong><code class="is-hidden-mobile">{{ client.client_id }}</code> <button data-dj-value="{{ client.client_id }}" class="copy-btn tag">Copy</button></p>
       </div>
     </div>
   </div>
   <div class="level is-mobile">
     <div class="level-left">
       <div class="level-item">
-        <p class="subtitle">Client Secret: <code id="client-secret" class="is-hidden-mobile" data-dj-value="{{ client.client_secret }}">******* Click to reveal ********</code> <button data-dj-value="{{ client.client_secret }}" class="copy-btn tag">Copy</button></p>
+        <p class="subtitle"><strong>Client Secret: </strong><code id="client-secret" class="is-hidden-mobile" data-dj-value="{{ client.client_secret }}">******* Click to reveal ********</code> <button data-dj-value="{{ client.client_secret }}" class="copy-btn tag">Copy</button></p>
       </div>
     </div>
   </div>
@@ -69,14 +69,14 @@
     <div class="level mb-1">
       <div class="level-left is-align-items-baseline">
         <div class="level-item">
-          <h3 class="title">Entrypoint</h3>
+          <h3 class="title">Entrypoint <span class="tag is-info">required</span></h3>
         </div>
         <div class="level-item">
-          <h5 id="entrypoint-message" class="is-hidden m-0">Test</h5>
+          <h5 id="entrypoint-message" class="is-hidden m-0">&nbsp;</h5>
         </div>
       </div>
     </div>
-    <p class="subtitle is-6">If a user wants to be redirected from the profile page, they will land here.<br>If not set, the link will not be exposed in the profile page.</p>
+    <p class="subtitle is-6">If a user wants to be redirected from the profile page, they will land here.</p>
     
     <div class="field has-addons">
       <div class="control is-expanded">
@@ -93,7 +93,7 @@
 <section class="columns">
   <div class="column">
     <section class="mx-5 block has-text-centered">
-      <h2 class="title mb-2">Callback URLs</h2>
+      <h2 class="title mb-2">Callback URLs <span class="tag">required</span></h2>
       <p class="subtitle">URLs to notify user's approval</p>
       {% comment %} add url form {% endcomment %}
       <form class="mb-3" action="{% url 'oauth:callback_add' client.pk %}" method="post">
@@ -350,7 +350,7 @@
         editMessage.classList.add('has-text-success')
         break
       case 'review-fail':
-        editMessage.innerText = 'You need to add at least one callback url.'
+        editMessage.innerText = 'You need to add an entrypoint and at least one callback url.'
         editMessage.classList.add('has-text-warning')
         break
       case 'close':
@@ -403,6 +403,10 @@
     }
     else if (callback === 'exceed_limit') {
       callbackMsg.innerText = 'Maximum of 4 URLs allowed'
+      callbackMsg.classList.add('has-text-danger')
+    }
+    else if (callback === 'lasturl') {
+      callbackMsg.innerText = 'At least one callback url should be listed'
       callbackMsg.classList.add('has-text-danger')
     }
     else {

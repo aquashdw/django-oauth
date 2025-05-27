@@ -25,14 +25,17 @@
         <a class="navbar-item" href="/">
           Home
         </a>
-  
-        <a class="navbar-item" href="{% url 'accounts:my_profile' %}">
-          My Page
-        </a>
 
         <a class="navbar-item" href="{% url 'oauth:index' %}">
           OAuth
         </a>
+
+        {% if user.is_superuser %}
+        <a class="navbar-item" href="{% url 'oauth_admin:index' %}">
+          Admin
+        </a>
+        {% endif %}
+
       </div>
   
       <div class="navbar-end">

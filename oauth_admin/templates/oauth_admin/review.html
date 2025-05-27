@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="mt-6 px-6">
+  <div class="level mb-5">
+    <div class="level-left">
+      <div class="level-item">
+        <h1 class="title is-1">{{ client.name }} <span 
+            class="
+              tag 
+              is-medium
+              {% if client.status == 'PROD' %}
+              is-success
+              {% elif client.status == 'REJ' or client.status == 'CLO' %}
+              is-danger
+              {% else %}
+              is-warning
+              {% endif %}
+              "
+            >
+            {{ client.get_status_display }}
+          </span>
+        </h1>
+      </div>
+    </div>
+  </div>
+  <div class="level is-mobile">
+    <div class="level-left">
+      <div class="level-item">
+        <p class="subtitle"><strong>Desc: </strong>{{ client.get_desc }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="level is-mobile">
+    <div class="level-left">
+      <div class="level-item">
+        <p class="subtitle is-hidden-mobile"><strong>Entrypoint: </strong><a target="_blank" href="{{ client.get_entry }}">{{ client.get_entry }}</a></p>
+        <p class="subtitle is-hidden-tablet"><strong class="is-block mb-2">Entrypoint</strong><a class="is-block" target="_blank" href="{{ client.get_entry }}">{{ client.get_entry }}</a></p>
+      </div>
+    </div>
+  </div>
+  <div class="level is-mobile">
+    <div class="level-left">
+      <div class="level-item">
+        <p class="subtitle">Client ID: <code class="is-hidden-mobile">{{ client.client_id }}</code> <button data-dj-value="{{ client.client_id }}" class="copy-btn tag">Copy</button></p>
+      </div>
+    </div>
+  </div>
+  <div class="level is-mobile">
+    <div class="level-left">
+      <div class="level-item">
+        <p class="subtitle">Client Secret: <code id="client-secret" class="is-hidden-mobile" data-dj-value="{{ client.client_secret }}">******* Click to reveal ********</code> <button data-dj-value="{{ client.client_secret }}" class="copy-btn tag">Copy</button></p>
+      </div>
+    </div>
+  </div>
+  <div class="level is-mobile">
+    <div class="level-left">
+      <div class="level-item">
+        <div>
+          <p class="subtitle"><strong>Callback URLs</strong></p>
+          <ul>
+          {% for url in callback_urls %}
+            <li><a href="{{ url.url }}">{{ url.url }}</a></li>
+          {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr>
+<section class="section px-6">
+  <h2 class="title">Review</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <div id="decision-select" class="select is-medium is-danger">
+        <select name="decision" id="decision">
+          <option value="REJ">Reject</option>
+          <option value="PROD">Approve</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="reason" class="label is-size-5">Reason</label>
+      <div class="control">
+        <textarea class="textarea" name="reason" id="reason"></textarea>
+      </div>
+    </div>
+    <div class="field is-grouped mt-4">
+      <div class="control">
+        <input class="button is-clickable is-primary" type="submit">
+        <a class="button is-clickable is-warning" href="{% url 'oauth:index' %}">Back</a>
+      </div>
+    </div>
+  </form>
+</section>
+<hr>
+<section class="section px-6">
+  <h2 class="title">Previous Reviews</h2>
+  {% if reviews %}
+  {% else %}
+  <h3 class="is-size-5 has-text-warning">No past reviews</h3>
+  {% endif %}
+</section>
+{% endblock content %}
+
+{% block script %}
+{% comment %} client keys {% endcomment %}
+<script>
+  document.querySelectorAll('.copy-btn').forEach(button => button.addEventListener('click', (event) => {
+    navigator.clipboard.writeText(event.target.dataset.djValue)
+    event.target.innerText = 'Copied!'
+    setTimeout(() => {
+      event.target.innerText = 'Copy'
+    }, 3000)
+  }))
+
+  let clientSecretHolder = document.getElementById('client-secret')
+  let masked = true
+  clientSecretHolder.addEventListener('click', (event) => {
+    if (masked) clientSecretHolder.innerText = clientSecretHolder.dataset.djValue
+    else clientSecretHolder.innerText = '******* Click to reveal ********'
+    masked = !masked
+  })
+</script>
+
+{% comment %} select decision {% endcomment %}
+<script>
+  const select = document.getElementById('decision-select')
+  document.getElementById('decision').addEventListener('change', (event) => {
+    const value = event.target.value
+    console.log(value)
+    if (value === 'REJ') {
+      select.classList.remove('is-success')
+      select.classList.add('is-danger')
+    }
+    if (value === 'PROD') {
+      select.classList.remove('is-danger')
+      select.classList.add('is-success')
+    }
+  })
+</script>
+{% endblock script %}
