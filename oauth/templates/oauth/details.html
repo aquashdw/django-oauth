@@ -336,17 +336,37 @@
 {% block script %}
 {% comment %} edit client {% endcomment %}
 <script>
-  const editSuccess = urlParams.get('edit')
-  const error = urlParams.get('errors')
-  if (editSuccess || error === 'clientname') {
-    const editSuccessMsg = document.getElementById('edit-result-msg')
-    editSuccessMsg.innerText = editSuccess ? 'Edit Success!!!' : 'Edit Failed.'
-    editSuccessMsg.classList.add(editSuccess ? 'has-text-success' : 'has-text-danger')
-    editSuccessMsg.classList.toggle('is-invisible')
+  const editParam = urlParams.get('edit')
+  if (editParam) {
+    const editMessage = document.getElementById('edit-result-msg')
+    editMessage.classList.toggle('is-invisible')
+    switch (editParam) {
+      case 'info':
+        editMessage.innerText = 'Edit Success!!!'
+        editMessage.classList.add('has-text-success')
+        break
+      case 'review':
+        editMessage.innerText = 'Review Requested!!!'
+        editMessage.classList.add('has-text-success')
+        break
+      case 'review-fail':
+        editMessage.innerText = 'You need to add at least one callback url.'
+        editMessage.classList.add('has-text-warning')
+        break
+      case 'close':
+        editMessage.innerText = 'Your application is closed.'
+        editMessage.classList.add('has-text-warning')
+        break
+      default: 
+        editMessage.innerText = 'UNKNOWN'
+        editMessage.classList.add('has-text-danger')
+        break
+    }
     setTimeout(() => {
-      editSuccessMsg.classList.toggle('is-invisible')
+      editMessage.classList.toggle('is-invisible')
     }, 3000)
   }
+
 </script>
 
 {% comment %} entrypoint {% endcomment %}
