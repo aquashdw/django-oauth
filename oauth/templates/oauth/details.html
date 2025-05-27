@@ -39,6 +39,33 @@
   </div>
 </section>
 <hr>
+<section class="my-4 px-6">
+  <form action="{% url 'oauth:update_entry' client.pk %}" method="post">
+    {% csrf_token %}
+    <div class="level mb-1">
+      <div class="level-left is-align-items-baseline">
+        <div class="level-item">
+          <h3 class="title">Entrypoint</h3>
+        </div>
+        <div class="level-item">
+          <h5 id="entrypoint-message" class="is-hidden m-0">Test</h5>
+        </div>
+      </div>
+    </div>
+    <p class="subtitle is-6">If a user wants to be redirected from the profile page, they will land here.<br>If not set, the link will not be exposed in the profile page.</p>
+    
+    <div class="field has-addons">
+      <div class="control is-expanded">
+        <input class="input" type="url" name="entrypoint" value="{{ client.get_entry }}" required>
+      </div>
+      <div class="control">
+        <button class="button is-info" type="submit" {% if not callback_urls|length < 4 %}disabled{% endif %}>Set</button>
+      </div>
+    </div>
+  </form>
+  
+</section>
+<hr>
 <section class="columns">
   <div class="column">
     <section class="mx-5 block has-text-centered">
@@ -203,111 +230,130 @@
 {% block script %}
 {% comment %} edit client {% endcomment %}
 <script>
-const modal = document.getElementById('edit-client-modal')
+  const modal = document.getElementById('edit-client-modal')
 
-const openModal = () => modal.classList.add('is-active')
-const closeModal = () => modal.classList.remove('is-active')
+  const openModal = () => modal.classList.add('is-active')
+  const closeModal = () => modal.classList.remove('is-active')
 
-document.getElementById('modal-open-button').addEventListener('click', openModal)
-document.querySelector('.modal-background').addEventListener('click', closeModal)
-document.querySelectorAll('.close-modal-btn').forEach(btn => btn.addEventListener('click', closeModal))
-document.addEventListener('keydown', (event) => {
-  if(event.key === "Escape") {
-    closeModal();
-  }
-});
-const editSuccess = urlParams.get('edit')
-const error = urlParams.get('errors')
-if (editSuccess || error === 'clientname') {
-  const editSuccessMsg = document.getElementById('edit-result-msg')
-  editSuccessMsg.innerText = editSuccess ? 'Edit Success!!!' : 'Edit Failed.'
-  editSuccessMsg.classList.add(editSuccess ? 'has-text-success' : 'has-text-danger')
-  editSuccessMsg.classList.toggle('is-invisible')
-  setTimeout(() => {
+  document.getElementById('modal-open-button').addEventListener('click', openModal)
+  document.querySelector('.modal-background').addEventListener('click', closeModal)
+  document.querySelectorAll('.close-modal-btn').forEach(btn => btn.addEventListener('click', closeModal))
+  document.addEventListener('keydown', (event) => {
+    if(event.key === "Escape") {
+      closeModal();
+    }
+  });
+  const editSuccess = urlParams.get('edit')
+  const error = urlParams.get('errors')
+  if (editSuccess || error === 'clientname') {
+    const editSuccessMsg = document.getElementById('edit-result-msg')
+    editSuccessMsg.innerText = editSuccess ? 'Edit Success!!!' : 'Edit Failed.'
+    editSuccessMsg.classList.add(editSuccess ? 'has-text-success' : 'has-text-danger')
     editSuccessMsg.classList.toggle('is-invisible')
-  }, 3000)
-}
+    setTimeout(() => {
+      editSuccessMsg.classList.toggle('is-invisible')
+    }, 3000)
+  }
+</script>
+
+{% comment %} entrypoint {% endcomment %}
+<script>
+  const entrypoint = urlParams.get('entrypoint')
+  if (entrypoint) {
+    const entrypointMsgContainer = document.getElementById('entrypoint-message')
+    entrypointMsgContainer.classList.toggle('is-hidden')
+    if (entrypoint === 'success') {
+      entrypointMsgContainer.innerText = 'Entrypoint set'
+      entrypointMsgContainer.classList.add('has-text-success')
+    } else {
+      entrypointMsgContainer.innerText = 'Error'
+      entrypointMsgContainer.classList.add('has-text-danger')
+    }
+    setTimeout(() => {
+      entrypointMsgContainer.classList.toggle('is-hidden')
+    }, 3000)
+  }
 </script>
 
 {% comment %} callback urls {% endcomment %}
 <script>
-const callback = urlParams.get('callback')
-if (callback) {
-  const callbackMsg = document.getElementById('callback-msg')
-  if (callback === 'add') {
-    callbackMsg.innerText = 'URL added'
-    callbackMsg.classList.add('has-text-success')
-  }
-  else if (callback === 'remove') {
-    callbackMsg.innerText = 'URL removed'
-    callbackMsg.classList.add('has-text-warning')
-  }
-  else if (callback === 'exceed_limit') {
-    callbackMsg.innerText = 'Maximum of 4 URLs allowed'
-    callbackMsg.classList.add('has-text-danger')
-  }
-  else {
-    callbackMsg.innerText = 'Error: Check for duplicates'
-    callbackMsg.classList.add('has-text-danger')
-  }
-  
-  callbackMsg.classList.toggle('is-invisible')
-  setTimeout(() => {
+  const callback = urlParams.get('callback')
+  if (callback) {
+    const callbackMsg = document.getElementById('callback-msg')
+    if (callback === 'add') {
+      callbackMsg.innerText = 'URL added'
+      callbackMsg.classList.add('has-text-success')
+    }
+    else if (callback === 'remove') {
+      callbackMsg.innerText = 'URL removed'
+      callbackMsg.classList.add('has-text-warning')
+    }
+    else if (callback === 'exceed_limit') {
+      callbackMsg.innerText = 'Maximum of 4 URLs allowed'
+      callbackMsg.classList.add('has-text-danger')
+    }
+    else {
+      callbackMsg.innerText = 'Error: Check for duplicates'
+      callbackMsg.classList.add('has-text-danger')
+    }
+    
     callbackMsg.classList.toggle('is-invisible')
-  }, 3000)
-}
+    setTimeout(() => {
+      callbackMsg.classList.toggle('is-invisible')
+    }, 3000)
+  }
 </script>
 
 {% comment %} test users {% endcomment %}
 <script>
-const testuser = urlParams.get('testuser')
-if (testuser) {
-  const testuserMsg = document.getElementById('testuser-msg')
-  if (testuser === 'add') {
-    testuserMsg.innerText = 'Test user added'
-    testuserMsg.classList.add('has-text-success')
-  }
-  else if (testuser === 'remove') {
-    testuserMsg.innerText = 'Test user removed'
-    testuserMsg.classList.add('has-text-warning')}
-  else if (testuser === 'exceed_limit') {
-    testuserMsg.innerText = 'Maximum of 10 Users allowed'
-    testuserMsg.classList.add('has-text-danger')}
-  else if (testuser === 'duplicate') {
-    testuserMsg.innerText = 'User already added'
-    testuserMsg.classList.add('has-text-danger')}
-  else if (testuser === 'not_found') {
-    testuserMsg.innerText = 'User not found'
-    testuserMsg.classList.add('has-text-danger')
-  }
-  else {
-    testuserMsg.innerText = 'Error'
-    testuserMsg.classList.add('has-text-danger')
-  }
+  const testuser = urlParams.get('testuser')
+  if (testuser) {
+    const testuserMsg = document.getElementById('testuser-msg')
+    if (testuser === 'add') {
+      testuserMsg.innerText = 'Test user added'
+      testuserMsg.classList.add('has-text-success')
+    }
+    else if (testuser === 'remove') {
+      testuserMsg.innerText = 'Test user removed'
+      testuserMsg.classList.add('has-text-warning')}
+    else if (testuser === 'exceed_limit') {
+      testuserMsg.innerText = 'Maximum of 10 Users allowed'
+      testuserMsg.classList.add('has-text-danger')}
+    else if (testuser === 'duplicate') {
+      testuserMsg.innerText = 'User already added'
+      testuserMsg.classList.add('has-text-danger')}
+    else if (testuser === 'not_found') {
+      testuserMsg.innerText = 'User not found'
+      testuserMsg.classList.add('has-text-danger')
+    }
+    else {
+      testuserMsg.innerText = 'Error'
+      testuserMsg.classList.add('has-text-danger')
+    }
 
-  testuserMsg.classList.toggle('is-invisible')
-  setTimeout(() => {
     testuserMsg.classList.toggle('is-invisible')
-  }, 3000)
-}
+    setTimeout(() => {
+      testuserMsg.classList.toggle('is-invisible')
+    }, 3000)
+  }
 </script>
 
 {% comment %} client keys {% endcomment %}
 <script>
-document.querySelectorAll('.copy-btn').forEach(button => button.addEventListener('click', (event) => {
-  navigator.clipboard.writeText(event.target.dataset.djValue)
-  event.target.innerText = 'Copied!'
-  setTimeout(() => {
-    event.target.innerText = 'Copy'
-  }, 3000)
-}))
+  document.querySelectorAll('.copy-btn').forEach(button => button.addEventListener('click', (event) => {
+    navigator.clipboard.writeText(event.target.dataset.djValue)
+    event.target.innerText = 'Copied!'
+    setTimeout(() => {
+      event.target.innerText = 'Copy'
+    }, 3000)
+  }))
 
-let clientSecretHolder = document.getElementById('client-secret')
-let masked = true
-clientSecretHolder.addEventListener('click', (event) => {
-  if (masked) clientSecretHolder.innerText = clientSecretHolder.dataset.djValue
-  else clientSecretHolder.innerText = '******* Click to reveal ********'
-  masked = !masked
-})
+  let clientSecretHolder = document.getElementById('client-secret')
+  let masked = true
+  clientSecretHolder.addEventListener('click', (event) => {
+    if (masked) clientSecretHolder.innerText = clientSecretHolder.dataset.djValue
+    else clientSecretHolder.innerText = '******* Click to reveal ********'
+    masked = !masked
+  })
 </script>
 {% endblock script %}

@@ -69,9 +69,11 @@
                 </div>
               </div>
               <div class="level-right">
+                {% if app.get_entry %}
                 <div class="level-item">
-                  <a class="button is-info">Go</a>
+                  <a href="{{ app.get_entry }}" target="_blank" class="button is-info">Go</a>
                 </div>
+                {% endif %}
                 <div class="level-item">
                   <form action="{% url 'oauth:revoke' app.pk %}" method="post">
                     {% csrf_token %}
@@ -327,9 +329,9 @@ document.querySelectorAll('.close-modal-btn, .modal-background')
 
 {% comment %} revoke message {% endcomment %}
 <script>
-  const revokeMsgContainer = document.getElementById('revoke-message-text')
   const revoke = urlParams.get('revoke')
   if (revoke) {
+    const revokeMsgContainer = document.getElementById('revoke-message-text')
     revokeMsgContainer.classList.toggle('is-hidden')
     revokeMsgContainer.innerText = revoke !== 'fail' ? `Revoked ${revoke}` : 'Revoke failed'
     setTimeout(() => {

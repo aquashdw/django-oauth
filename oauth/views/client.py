@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_safe, require_POST, require_http_methods
 
 from django_oauth.utils import get_perm, redirect_with_nq, extract_form_errors
-from oauth.forms import OAuthClientForm, CallbackUrlForm
+from oauth.forms import OAuthClientForm, CallbackUrlForm, OAuthEntrypointForm
 from oauth.models import OAuthClient, CallbackUrl
 
 OAUTH_CODENAME = 'oauth_active'
@@ -103,6 +103,23 @@ def update_client(request, pk):
 
     params = {
         'errors': 'clientname',
+    }
+    return redirect_with_nq('oauth:read', params, pk)
+
+
+@require_POST
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
+def update_client_entry(request, pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if request.user != client.owner:
+        raise PermissionDenied
+    form = OAuthEntrypointForm(request.POST, instance=client)
+    if form.is_valid():
+        form.save()
+        return redirect_with_nq('oauth:read', {'entrypoint': 'success'}, pk)
+
+    params = {
+        'errors': 'entrypoint',
     }
     return redirect_with_nq('oauth:read', params, pk)
 

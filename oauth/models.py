@@ -15,6 +15,7 @@ class OAuthClient(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='client_apps')
     name = models.CharField(max_length=128)
     desc = models.CharField(max_length=128, null=True)
+    entrypoint = models.URLField(max_length=256, null=True)
     client_id = models.CharField(max_length=128)
     client_secret = models.CharField(max_length=128)
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, default=DEVELOPMENT)
@@ -27,6 +28,9 @@ class OAuthClient(models.Model):
 
     def get_desc(self):
         return self.desc if self.desc else ''
+
+    def get_entry(self):
+        return self.entrypoint if self.entrypoint else ''
 
     class Meta:
         permissions = [

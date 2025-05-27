@@ -13,6 +13,7 @@ urlpatterns = [
     path('create/', client_views.create_client, name='create'),
     path('<int:pk>/', client_views.read_client, name='read'),
     path('<int:pk>/update/', client_views.update_client, name='update'),
+    path('<int:pk>/entrypoint/', client_views.update_client_entry, name='update_entry'),
     path('<int:pk>/delete/', client_views.delete_client, name='delete'),
     # callbacks
     path('<int:pk>/callbacks/', client_views.add_callback, name='callback_add'),

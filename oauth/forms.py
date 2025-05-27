@@ -9,6 +9,12 @@ class OAuthClientForm(forms.ModelForm):
         fields = ('name', 'desc',)
 
 
+class OAuthEntrypointForm(forms.ModelForm):
+    class Meta:
+        model = OAuthClient
+        fields = ('entrypoint',)
+
+
 class CallbackUrlForm(forms.ModelForm):
     class Meta:
         model = CallbackUrl
