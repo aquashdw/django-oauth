@@ -2,13 +2,13 @@
 
 {% block content %}
 <section class="mt-6 px-6">
-  <div class="title level is-mobile mb-1">
+  <div class="title level is-mobile mb-5">
     <div class="level-left">
       <div class="level-item">
         <div>
-          <p class="title is-1">{{ client.name }} <button class="tag is-info" id="modal-open-button">Edit</button></p>
-          <p class="subtitle">{{ client.get_desc }}</p>
           <p id="edit-result-msg" class="subtitle is-6 is-invisible">&nbsp;</p>
+          <p class="title is-1">{{ client.name }} <button class="tag is-info open-modal-btn" data-modal-target="edit-client-modal">Edit</button></p>
+          <p class="subtitle">{{ client.get_desc }}</p>
         </div>
       </div>
     </div>
@@ -171,7 +171,7 @@
         </div>
         <div class="level-right">
           <div class="level-item">
-            <button id="modal-close-button" class="delete close-modal-btn" aria-label="close"></button>
+            <button class="delete close-modal-btn" data-modal-target="edit-client-modal" aria-label="close"></button>
           </div>
         </div>
       </div>
@@ -230,19 +230,6 @@
 {% block script %}
 {% comment %} edit client {% endcomment %}
 <script>
-  const modal = document.getElementById('edit-client-modal')
-
-  const openModal = () => modal.classList.add('is-active')
-  const closeModal = () => modal.classList.remove('is-active')
-
-  document.getElementById('modal-open-button').addEventListener('click', openModal)
-  document.querySelector('.modal-background').addEventListener('click', closeModal)
-  document.querySelectorAll('.close-modal-btn').forEach(btn => btn.addEventListener('click', closeModal))
-  document.addEventListener('keydown', (event) => {
-    if(event.key === "Escape") {
-      closeModal();
-    }
-  });
   const editSuccess = urlParams.get('edit')
   const error = urlParams.get('errors')
   if (editSuccess || error === 'clientname') {

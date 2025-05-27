@@ -110,6 +110,21 @@
     }))
     
   </script>
+  {% comment %} modal control {% endcomment %}
+  <script>
+  const openModal = (modalId) => document.getElementById(modalId).classList.add('is-active')
+  const closeModal = (modalId) => document.getElementById(modalId).classList.remove('is-active')
+
+  document.querySelectorAll('.open-modal-btn')
+    .forEach(openBtn => openBtn.addEventListener('click', () => {
+      openModal(openBtn.dataset.modalTarget)
+  }))
+
+  document.querySelectorAll('.close-modal-btn, .modal-background')
+    .forEach(closeElem => closeElem.addEventListener('click', () => {
+      closeModal(closeElem.dataset.modalTarget)
+  }))
+  </script>
 
   {% comment %} other template scripts {% endcomment %}
   {% block script %}

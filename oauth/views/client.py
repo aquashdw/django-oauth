@@ -99,7 +99,7 @@ def update_client(request, pk):
     form = OAuthClientForm(request.POST, instance=client)
     if form.is_valid():
         form.save()
-        return redirect_with_nq('oauth:read', {'rename': 'true'}, pk)
+        return redirect_with_nq('oauth:read', {'edit': 'info'}, pk)
 
     params = {
         'errors': 'clientname',
