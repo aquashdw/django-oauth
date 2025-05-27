@@ -4,6 +4,8 @@ from oauth.models import OAuthClient, CallbackUrl
 
 
 class OAuthClientForm(forms.ModelForm):
+    desc = forms.CharField(required=False)
+
     class Meta:
         model = OAuthClient
         fields = ('name', 'desc',)
