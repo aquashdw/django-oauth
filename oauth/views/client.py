@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required, login_required
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, BadRequest
 from django.db.models import Prefetch
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -223,3 +223,36 @@ def remove_test_user(request, pk):
     client.test_users.remove(test_user)
     client.save()
     return redirect_with_nq('oauth:read', {'testuser': 'remove'}, pk)
+
+
+@require_POST
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
+def request_review(request, pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if request.user != client.owner:
+        raise PermissionDenied
+
+    if client.status == OAuthClient.PRODUCTION or client.status == OAuthClient.DELETED:
+        raise BadRequest('bad state')
+
+    if client.callback_urls.count() == 0:
+        return redirect_with_nq('oauth:read', {'edit': 'review-fail'}, pk)
+
+    client.status = OAuthClient.REVIEWING
+    client.save()
+    return redirect_with_nq('oauth:read', {'edit': 'review'}, pk)
+
+
+@require_POST
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
+def request_close(request, pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if request.user != client.owner:
+        raise PermissionDenied
+
+    if client.status != OAuthClient.PRODUCTION:
+        raise BadRequest('bad state')
+
+    client.status = OAuthClient.CLOSED
+    client.save()
+    return redirect_with_nq('oauth:read', {'edit': 'close'}, pk)

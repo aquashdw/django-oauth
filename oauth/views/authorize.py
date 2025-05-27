@@ -47,7 +47,7 @@ def authorize(request):
     if not callback:
         raise BadRequest('invalid callback')
 
-    if client.status == OAuthClient.DEVELOPMENT and not client.test_users.contains(
+    if client.status != OAuthClient.PRODUCTION and not client.test_users.contains(
             request.user) and request.user != client.owner:
         raise PermissionDenied
 

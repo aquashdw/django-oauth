@@ -20,4 +20,7 @@ urlpatterns = [
     path('<int:pk>/test-users/', views.add_test_user, name='testuser_add'),
     path('<int:pk>/test-users/remove/', views.remove_test_user, name='testuser_remove'),
 
+    # state update
+    path('<int:pk>/review/', views.request_review, name='review'),
+    path('<int:pk>/close/', views.request_close, name='close'),
 ]

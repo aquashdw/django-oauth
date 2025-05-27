@@ -20,13 +20,27 @@
     <div class="level-left">
       <div class="level-item">
         <p class="subtitle">
-          Status: <span class="tag is-medium is-warning">{{ client.get_status_display }}</span>
+          Status: <span 
+            class="
+              tag 
+              is-medium
+              {% if client.status == 'PROD' %}
+              is-success
+              {% elif client.status == 'REJ' or client.status == 'CLO' %}
+              is-danger
+              {% else %}
+              is-warning
+              {% endif %}
+              "
+            >
+            {{ client.get_status_display }}
+          </span>
           {% if client.status == 'REJ' or client.status == 'CLO' %}
           <button class="tag open-modal-btn" data-modal-target="reason-modal">Reasons</button>
           {% elif client.status == 'PROD' %}
           <button class="tag open-modal-btn" id="close-button" data-modal-target="close-modal">Close Temporarily</button>
           {% endif %}
-          {% if client.status != 'DEL' or client.status != 'PROD' %}
+          {% if client.status != 'DEL' and client.status != 'PROD' and client.status != 'REV' %}
           <button class="tag open-modal-btn" id="request-button" data-modal-target="request-modal">Request Open</button>
           {% endif %}
         </p>
@@ -251,6 +265,16 @@
           </div>
         </div>
       </div>
+      <form class="mb-3" action="{% url 'oauth:review' client.pk %}" method="post">
+        {% csrf_token %}
+        <p class="has-text-weight-semibold">Ready to launch your application?</p>
+          <div class="field is-grouped">
+          <div class="control">
+            <input class="button is-clickable is-primary" type="submit" value="Yes">
+            <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="request-modal">No</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -293,6 +317,16 @@
           </div>
         </div>
       </div>
+      <form class="mb-3" action="{% url 'oauth:close' client.pk %}" method="post">
+        {% csrf_token %}
+        <p class="has-text-weight-semibold">Stop using your application?</p>
+          <div class="field is-grouped">
+          <div class="control">
+            <input class="button is-clickable is-danger" type="submit" value="Yes">
+            <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="request-modal">No</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>
