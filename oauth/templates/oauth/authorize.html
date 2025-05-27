@@ -2,6 +2,22 @@
 
 {% block content %}
 <section class="m-6 p-6 box has-text-centered">
+  {% if authorized %}
+  <div class="block">
+    <p class="title">
+      You are trying to use <strong>"{{ client.name }}"</strong>.
+    </p>
+  </div>
+  <form method="post" class="mx-auto">
+    {% csrf_token %}
+    <div class="field">
+      <div class="buttons is-centered">
+        <input class="button is-clickable is-success" type="submit" value="Go">
+        <button id="back-button" class="button is-clickable is-warning" type="button">Back</button>
+      </div>
+    </div>
+  </form>
+  {% else %}
   <div class="block">
     <p class="title">
       <strong>"{{ client.name }}"</strong> is asking for your info.
@@ -13,10 +29,11 @@
     <div class="field">
       <div class="buttons is-centered">
         <input class="button is-clickable is-success" type="submit" value="Yes">
-        <button id="back-button" class="button is-clickable is-warning" type="button">No</button>
+        <button id="no-button" class="button is-clickable is-warning" type="button">No</button>
       </div>
     </div>
   </form>
+  {% endif %}
 </section>
 {% endblock content %}
 
@@ -24,10 +41,11 @@
 <script>
   let callback = urlParams.get('callback')
   const state = urlParams.get('state')
-  const backButton = document.getElementById('back-button').addEventListener('click', () => {
+  const noButton = document.getElementById('no-button')?.addEventListener('click', () => {
     callback += `?error=refused`
     if (state) callback += `&state=${state}`
     location.assign(callback)
   })
+  const backButton = document.getElementById('back-button')?.addEventListener('click', () => history.back())
 </script>
 {% endblock script %}
