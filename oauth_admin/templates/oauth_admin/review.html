@@ -1,26 +1,36 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <section class="mt-6 px-6">
   <div class="level mb-5">
     <div class="level-left">
       <div class="level-item">
-        <h1 class="title is-1">{{ client.name }} <span 
-            class="
-              tag 
-              is-medium
-              {% if client.status == 'PROD' %}
-              is-success
-              {% elif client.status == 'REJ' or client.status == 'CLO' %}
-              is-danger
-              {% else %}
-              is-warning
-              {% endif %}
-              "
-            >
-            {{ client.get_status_display }}
-          </span>
-        </h1>
+        <div>
+          <figure class="image is-128x128">
+            {% if client.logo %}
+            <img src="{{ client.logo }}" alt="logo.png">
+            {% else %}
+            <img src="{% static 'assets/images/application.png' %}" alt="">
+            {% endif %}
+          </figure>
+          <h1 class="title is-1 mt-0">{{ client.name }} <span 
+              class="
+                tag 
+                is-medium
+                {% if client.status == 'PROD' %}
+                is-success
+                {% elif client.status == 'REJ' or client.status == 'CLO' %}
+                is-danger
+                {% else %}
+                is-warning
+                {% endif %}
+                "
+              >
+              {{ client.get_status_display }}
+            </span>
+          </h1>
+        </div>
       </div>
     </div>
   </div>

@@ -4,7 +4,7 @@
 <div class="columns">
   <div class="column is-two-fifths">
     <div class="box m-4">
-      <p class="image is-1by1">
+      <p class="image is-square">
         <img class="is-rounded" src="{% static 'assets/images/user.png' %}" alt="Profile Image">
       </p>
 
@@ -55,7 +55,11 @@
         <article class="media">
           <figure class="media-left">
             <p class="image is-48x48">
-              <img src="{% static 'assets/images/application.png' %}" alt="App Image">
+              {% if app.logo %}
+              <img src="{{ app.logo }}" alt="logo.png">
+              {% else %}
+              <img src="{% static 'assets/images/application.png' %}" alt="">
+              {% endif %}
             </p>
           </figure>
           <div class="media-content">
@@ -98,7 +102,11 @@
         <article class="media">
           <figure class="media-left">
             <p class="image is-48x48">
-              <img src="{% static 'assets/images/application.png' %}" alt="App Image">
+              {% if app.logo %}
+              <img src="{{ app.logo }}" alt="logo.png">
+              {% else %}
+              <img src="{% static 'assets/images/application.png' %}" alt="">
+              {% endif %}
             </p>
           </figure>
           <div class="media-content">

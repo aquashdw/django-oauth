@@ -1,9 +1,17 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <section class="m-6 p-6 box has-text-centered">
   {% if authorized %}
   <div class="block">
+    <figure class="image is-128x128 mx-auto mb-3">
+      {% if client.logo %}
+      <img src="{{ client.logo }}" alt="logo.png">
+      {% else %}
+      <img src="{% static 'assets/images/application.png' %}" alt="">
+      {% endif %}
+    </figure>
     <p class="title">
       You are trying to use <strong>"{{ client.name }}"</strong>.
     </p>
@@ -19,6 +27,13 @@
   </form>
   {% else %}
   <div class="block">
+    <figure class="image is-128x128 mx-auto mb-3">
+      {% if client.logo %}
+      <img src="{{ client.logo }}" alt="logo.png">
+      {% else %}
+      <img src="{% static 'assets/images/application.png' %}" alt="">
+      {% endif %}
+    </figure>
     <p class="title">
       <strong>"{{ client.name }}"</strong> is asking for your info.
     </p>

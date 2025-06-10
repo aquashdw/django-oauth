@@ -19,6 +19,7 @@ class OAuthClient(models.Model):
     ]
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='client_apps')
+    logo = models.ImageField(max_length=256, null=True)
     name = models.CharField(max_length=128)
     desc = models.CharField(max_length=128, null=True)
     entrypoint = models.URLField(max_length=256, null=True)
