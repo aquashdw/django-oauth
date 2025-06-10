@@ -9,9 +9,9 @@
         <div>
           <p id="edit-result-msg" class="subtitle is-6 is-invisible">&nbsp;</p>
           <div class="is-relative mb-3">
-            <figure class="image is-128x128">
+            <figure class="image is-128x128 is-square">
               {% if client.logo %}
-              <img src="{{ client.logo }}" alt="logo.png">
+              <img src="{{ client.logo.url }}" alt="logo.png">
               {% else %}
               <img src="{% static 'assets/images/application.png' %}" alt="">
               {% endif %}
@@ -289,9 +289,9 @@
               <h5>Current (default):</h5>
               {% endif %}
               <div class="is-relative mb-3">
-                <figure class="image is-128x128">
+                <figure class="image is-128x128 is-square">
                   {% if client.logo %}
-                  <img src="{{ client.logo }}" alt="logo.png">
+                  <img src="{{ client.logo.url }}" alt="logo.png">
                   {% else %}
                   <img src="{% static 'assets/images/application.png' %}" alt="">
                   {% endif %}
@@ -303,7 +303,7 @@
             <div>
               <h5>Preview:</h5>
               <div class="is-relative mb-3">
-                <figure class="image is-128x128">
+                <figure class="image is-128x128 is-square">
                   <img id="logo-preview" src="" alt="logo preview">
                 </figure>
               </div>
@@ -312,7 +312,7 @@
         </div>
       </div>
       {% comment %} modal form {% endcomment %}
-      <form class="mb-3" action="{% url 'oauth:logo_add' client.pk %}" method="post">
+      <form class="mb-3" action="{% url 'oauth:logo_add' client.pk %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="file">
           <label class="file-label">
@@ -325,7 +325,7 @@
         <div class="field is-grouped">
           <div class="control">
             <input class="button is-clickable is-primary" type="submit" value="Upload">
-            {% if logo.client %}
+            {% if client.logo %}
             <button id="remove-logo-btn" class="button is-clickable is-danger" type="button">Remove</button>
             {% endif %}
             <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="edit-logo-modal">Cancel</button>

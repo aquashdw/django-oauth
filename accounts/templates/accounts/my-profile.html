@@ -54,9 +54,9 @@
       {% for app in using_apps %}
         <article class="media">
           <figure class="media-left">
-            <p class="image is-48x48">
+            <p class="image is-48x48 is-square">
               {% if app.logo %}
-              <img src="{{ app.logo }}" alt="logo.png">
+              <img src="{{ app.logo.url }}" alt="logo.png">
               {% else %}
               <img src="{% static 'assets/images/application.png' %}" alt="">
               {% endif %}
@@ -101,9 +101,9 @@
       {% for client in clients %}
         <article class="media">
           <figure class="media-left">
-            <p class="image is-48x48">
-              {% if app.logo %}
-              <img src="{{ app.logo }}" alt="logo.png">
+            <p class="image is-48x48 is-square">
+              {% if client.logo %}
+              <img src="{{ client.logo.url }}" alt="logo.png">
               {% else %}
               <img src="{% static 'assets/images/application.png' %}" alt="">
               {% endif %}

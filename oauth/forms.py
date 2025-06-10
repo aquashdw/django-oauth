@@ -21,3 +21,9 @@ class CallbackUrlForm(forms.ModelForm):
     class Meta:
         model = CallbackUrl
         fields = ('url',)
+
+
+class OAuthClientLogoForm(forms.ModelForm):
+    class Meta:
+        model = OAuthClient
+        fields = ('logo',)

@@ -2,6 +2,10 @@ from django.conf import settings
 from django.db import models
 
 
+def set_logo_path(instance, _):
+    return f'client/{instance.pk}/logo.png'
+
+
 class OAuthClient(models.Model):
     DEVELOPMENT = 'DEV'
     PRODUCTION = 'PROD'
@@ -19,7 +23,7 @@ class OAuthClient(models.Model):
     ]
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='client_apps')
-    logo = models.ImageField(max_length=256, null=True)
+    logo = models.ImageField(max_length=256, null=True, upload_to=set_logo_path)
     name = models.CharField(max_length=128)
     desc = models.CharField(max_length=128, null=True)
     entrypoint = models.URLField(max_length=256, null=True)
