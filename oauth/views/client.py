@@ -86,6 +86,7 @@ def read_client(request, pk):
         'client': client,
         'callback_urls': client.callback_urls.all(),
         'test_users': client.test_users.all(),
+        'review': client.review_set.filter(decision=OAuthClient.REJECTED).last(),
     }
     return render(request, 'oauth/details.html', context)
 

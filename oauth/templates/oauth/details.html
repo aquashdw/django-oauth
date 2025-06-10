@@ -36,7 +36,7 @@
             {{ client.get_status_display }}
           </span>
           {% if client.status == 'REJ' or client.status == 'CLO' %}
-          <button class="tag open-modal-btn" data-modal-target="reason-modal">Reasons</button>
+          <button class="tag open-modal-btn" data-modal-target="reason-modal">Reason</button>
           {% elif client.status == 'PROD' %}
           <button class="tag open-modal-btn" id="close-button" data-modal-target="close-modal">Close Temporarily</button>
           {% endif %}
@@ -69,7 +69,7 @@
     <div class="level mb-1">
       <div class="level-left is-align-items-baseline">
         <div class="level-item">
-          <h3 class="title">Entrypoint <span class="tag is-info">required</span></h3>
+          <h3 class="title">Entrypoint <span class="tag">required</span></h3>
         </div>
         <div class="level-item">
           <h5 id="entrypoint-message" class="is-hidden m-0">&nbsp;</h5>
@@ -287,7 +287,7 @@
       <div class="level">
         <div class="level-left">
           <div class="level-item">
-            <p class="title is-4">Reject Reasons</p>
+            <p class="title is-4">Reject Reason</p>
           </div>
         </div>
         <div class="level-right">
@@ -296,6 +296,10 @@
           </div>
         </div>
       </div>
+      <div class="level">
+        <p>{{ review.reason }}</p>
+      </div>
+      <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="reason-modal">Close</button>
     </div>
   </div>
 </div>
@@ -323,7 +327,7 @@
           <div class="field is-grouped">
           <div class="control">
             <input class="button is-clickable is-danger" type="submit" value="Yes">
-            <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="request-modal">No</button>
+            <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="close-modal">No</button>
           </div>
         </div>
       </form>

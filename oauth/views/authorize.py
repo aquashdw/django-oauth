@@ -104,7 +104,7 @@ def token(request):
     return Response(data=create_tokens(request, user))
 
 
-@api_view
+@api_view()
 def get_user_info(request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
