@@ -165,7 +165,9 @@ def remove_logo(request, pk):
     if request.user != client.owner:
         raise PermissionDenied
 
-    # TODO
+    client.logo = None
+    client.save()
+    return redirect_with_nq('oauth:read', {'logo': 'remove'}, pk)
 
 
 @login_required

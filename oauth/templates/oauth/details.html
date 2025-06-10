@@ -332,6 +332,9 @@
           </div>
         </div>
       </form>
+      <form id="remove-logo-form" class="is-hidden" action="{% url 'oauth:logo_remove' client.pk %}" method="post">
+        {% csrf_token %}
+      </form>
     </div>
   </div>
 </div>
@@ -582,6 +585,12 @@
       previewImage.src = ''
       previewContainer.classList.add('is-hidden')
     }
+  })
+
+  const removeLogoForm = document.getElementById('remove-logo-form')
+  const removeLogoBtn = document.getElementById('remove-logo-btn')
+  removeLogoBtn.addEventListener('click', (event) => {
+    removeLogoForm.requestSubmit()
   })
 </script>
 {% endblock script %}
