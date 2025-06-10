@@ -13,6 +13,10 @@ urlpatterns = [
     path('<int:pk>/update/', views.update_client, name='update'),
     path('<int:pk>/entrypoint/', views.update_client_entry, name='update_entry'),
     path('<int:pk>/delete/', views.delete_client, name='delete'),
+
+    path('<int:pk>/logo/add/', views.add_logo, name='logo_add'),
+    path('<int:pk>/logo/remove/', views.remove_logo, name='logo_remove'),
+
     # callbacks
     path('<int:pk>/callbacks/', views.add_callback, name='callback_add'),
     path('<int:pk>/callbacks/<int:callback_pk>/', views.remove_callback, name='callback_remove'),

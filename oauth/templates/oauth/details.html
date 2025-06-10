@@ -279,28 +279,46 @@
           </div>
         </div>
       </div>
-      {% if client.logo %}
-      <h5>Current:</h5>
-      {% else %}
-      <h5>Current (default):</h5>
-      {% endif %}
-      <div class="is-relative mb-3">
-        <figure class="image is-128x128">
-          {% if client.logo %}
-          <img src="{{ client.logo }}" alt="logo.png">
-          {% else %}
-          <img src="{% static 'assets/images/application.png' %}" alt="">
-          {% endif %}
-        </figure>
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <div>
+              {% if client.logo %}
+              <h5>Current:</h5>
+              {% else %}
+              <h5>Current (default):</h5>
+              {% endif %}
+              <div class="is-relative mb-3">
+                <figure class="image is-128x128">
+                  {% if client.logo %}
+                  <img src="{{ client.logo }}" alt="logo.png">
+                  {% else %}
+                  <img src="{% static 'assets/images/application.png' %}" alt="">
+                  {% endif %}
+                </figure>
+              </div>
+            </div>
+          </div>
+          <div id="logo-preview-container" class="level-item is-hidden">
+            <div>
+              <h5>Preview:</h5>
+              <div class="is-relative mb-3">
+                <figure class="image is-128x128">
+                  <img id="logo-preview" src="" alt="logo preview">
+                </figure>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       {% comment %} modal form {% endcomment %}
-      <form class="mb-3">
+      <form class="mb-3" action="{% url 'oauth:logo_add' client.pk %}" method="post">
         {% csrf_token %}
         <div class="file">
           <label class="file-label">
-            <input class="file-input" type="file" name="logo" />
+            <input id="logo-input" class="file-input" type="file" accept="image/*" name="logo" required>
             <span class="file-cta">
-              <span class="file-label"> Choose a file… </span>
+              <span class="file-label"> Choose an image… </span>
             </span>
           </label>
         </div>
@@ -310,7 +328,7 @@
             {% if logo.client %}
             <button id="remove-logo-btn" class="button is-clickable is-danger" type="button">Remove</button>
             {% endif %}
-            <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="edit-logo-modal">Close</button>
+            <button class="button is-clickable is-warning close-modal-btn" type="button" data-modal-target="edit-logo-modal">Cancel</button>
           </div>
         </div>
       </form>
@@ -545,6 +563,25 @@
     if (masked) clientSecretHolder.innerText = clientSecretHolder.dataset.djValue
     else clientSecretHolder.innerText = '******* Click to reveal ********'
     masked = !masked
+  })
+</script>
+
+{% comment %} logo form {% endcomment %}
+<script>
+  const logoInput = document.getElementById('logo-input')
+  const previewContainer = document.getElementById('logo-preview-container')
+  const previewImage = document.getElementById('logo-preview')
+  logoInput.addEventListener('change', (event) => {
+    const files = event.target.files
+    console.log(files)
+    if (files.length === 1) {
+      previewImage.src = URL.createObjectURL(files[0])
+      previewContainer.classList.remove('is-hidden')
+    }
+    else {
+      previewImage.src = ''
+      previewContainer.classList.add('is-hidden')
+    }
   })
 </script>
 {% endblock script %}

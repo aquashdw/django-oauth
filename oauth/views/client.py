@@ -140,6 +140,26 @@ def delete_client(request, pk):
     return redirect_with_nq('oauth:index', {'delete': 'true'})
 
 
+@require_POST
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
+def add_logo(request, pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if request.user != client.owner:
+        raise PermissionDenied
+
+    # TODO
+
+
+@require_POST
+@permission_required(OAUTH_LOOKUP_NAME, login_url='oauth:activate')
+def remove_logo(request, pk):
+    client = get_object_or_404(OAuthClient, pk=pk)
+    if request.user != client.owner:
+        raise PermissionDenied
+
+    # TODO
+
+
 @login_required
 @permission_required(OAUTH_LOOKUP_NAME, login_url='accounts:index')
 def deactivate(request):
