@@ -11,7 +11,7 @@ from django.views.decorators.http import require_safe, require_POST
 
 from accounts.forms import UserCreationForm, AuthenticationForm, SendVerificationForm, EditProfileForm, AddLinkForm
 from accounts.models import UserLinks
-from accounts.rabbit import send_mail
+from accounts.mail import send_mail
 from django_oauth.utils import anonymous, extract_form_errors, redirect_with_nq
 from oauth.models import OAuthClient
 

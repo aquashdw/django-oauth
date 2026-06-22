@@ -7,7 +7,7 @@ credentials = pika.PlainCredentials(settings.RABBIT_USER, settings.RABBIT_PASSWO
 queue_name = settings.RABBIT_QUEUE_NAME
 
 
-def send_mail(to, subject, body):
+def send_mail_amqp(to, subject, body):
     connection = pika.BlockingConnection(pika.ConnectionParameters(
         settings.RABBIT_HOST,
         settings.RABBIT_PORT,
@@ -23,3 +23,14 @@ def send_mail(to, subject, body):
         body=payload,
     )
     connection.close()
+
+
+def send_mail_console(to, subject, body):
+    print(f'to: {to}')
+    print(f'subject: {subject}')
+
+    print()
+    print(body)
+
+
+send_mail = send_mail_console
