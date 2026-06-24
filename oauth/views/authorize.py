@@ -104,7 +104,7 @@ def token(request):
     return Response(data=create_tokens(request, user))
 
 
-@api_view()
+@api_view(['GET'])
 def get_user_info(request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
@@ -124,7 +124,7 @@ def get_user_info(request):
     if not user:
         return Response(data={'error': 'internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    return Response(data={'email': user.email})
+    return Response(data={'nickname': user.nickname, 'email': user.email})
 
 
 @api_view(['POST'])
