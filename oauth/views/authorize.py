@@ -51,14 +51,15 @@ def authorize(request):
             request.user) and request.user != client.owner:
         raise PermissionDenied
 
-    context = {
-        'client': client,
-        'authorized': client.users.contains(request.user),
-    }
-    if request.method == 'GET':
+    authorized = client.users.contains(request.user)
+    if request.method == 'GET' and not authorized:
+        context = {
+            'client': client,
+            'authorized': authorized,
+        }
         return render(request, 'oauth/authorize.html', context)
 
-    if not context['authorized']:
+    if not authorized:
         client.users.add(request.user)
         client.save()
 

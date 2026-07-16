@@ -11,5 +11,7 @@ psycopg-binary==3.3.4
 pyjwt==2.13.0
 redis==8.0.0
 sqlparse==0.5.5
+gunicorn==23.0.0
+python-dotenv==1.1.0
 typing-extensions==4.15.0
 tzdata==2026.2

@@ -10,7 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,17 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-7&2u=x$54#vf-#a+l)*(6m)f3m68^-b=&nf-s*r7vy6@_pl6yl'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-7&2u=x$54#vf-#a+l)*(6m)f3m68^-b=&nf-s*r7vy6@_pl6yl')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = []
-
-# DEBUG = False
-#
-# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if os.environ.get('DJANGO_ALLOWED_HOSTS') else []
 
 # Application definition
 
@@ -85,26 +84,27 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'auth',
-        'USER': 'auth',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
+        'NAME': os.environ.get('POSTGRES_DB', 'auth'),
+        'USER': os.environ.get('POSTGRES_USER', 'auth'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
 }
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://default:systempass@127.0.0.1:6379',
+        'LOCATION': os.environ.get('REDIS_URL', 'redis://default:systempass@127.0.0.1:6379'),
     }
 }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
-RABBIT_HOST = ''
-RABBIT_PORT = 5672
-RABBIT_USER = 'user'
-RABBIT_PASSWORD = "password"
+RABBIT_HOST = os.environ.get('RABBIT_HOST', '')
+RABBIT_PORT = int(os.environ.get('RABBIT_PORT', '5672'))
+RABBIT_USER = os.environ.get('RABBIT_USER', 'user')
+RABBIT_PASSWORD = os.environ.get('RABBIT_PASSWORD', 'password')
 RABBIT_QUEUE_NAME = "send_mail_queue"
 
 LOGIN_URL = '/accounts/signin/'
@@ -148,6 +148,7 @@ MEDIA_URL = 'media/'
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]

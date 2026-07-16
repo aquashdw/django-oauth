@@ -1,0 +1,32 @@
+services:
+  web:
+    build: .
+    env_file: .env
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn django_oauth.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    volumes:
+      - "$DOCKER_VOLUME_ROOT/django-oauth/media:/app/media"
+      - "$DOCKER_VOLUME_ROOT/django-oauth/staticfiles:/app/staticfiles"
+    expose:
+      - "8000"
+    networks:
+      - infra-network
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - "$DOCKER_VOLUME_ROOT/django-oauth/media:/app/media:ro"
+      - "$DOCKER_VOLUME_ROOT/django-oauth/staticfiles:/app/staticfiles:ro"
+    ports:
+      - "8000:80"
+    depends_on:
+      - web
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

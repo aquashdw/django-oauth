@@ -30,8 +30,11 @@ name = "django-oauth"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "asgiref" },
     { name = "django" },
     { name = "django-rest-framework" },
+    { name = "djangorestframework" },
+    { name = "gunicorn" },
     { name = "hashids" },
     { name = "hiredis" },
     { name = "pika" },
@@ -39,25 +42,32 @@ dependencies = [
     { name = "psycopg" },
     { name = "psycopg-binary" },
     { name = "pyjwt" },
+    { name = "python-dotenv" },
     { name = "redis" },
     { name = "sqlparse" },
     { name = "typing-extensions" },
+    { name = "tzdata" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "django", specifier = ">=6.0.6" },
-    { name = "django-rest-framework", specifier = ">=0.1.0" },
-    { name = "hashids", specifier = ">=1.3.1" },
-    { name = "hiredis", specifier = ">=3.4.0" },
-    { name = "pika", specifier = ">=1.4.1" },
-    { name = "pillow", specifier = ">=12.2.0" },
-    { name = "psycopg", specifier = ">=3.3.4" },
-    { name = "psycopg-binary", specifier = ">=3.3.4" },
-    { name = "pyjwt", specifier = ">=2.13.0" },
-    { name = "redis", specifier = ">=8.0.0" },
-    { name = "sqlparse", specifier = ">=0.5.5" },
-    { name = "typing-extensions", specifier = ">=4.15.0" },
+    { name = "asgiref", specifier = "==3.11.1" },
+    { name = "django", specifier = "==6.0.6" },
+    { name = "django-rest-framework", specifier = "==0.1.0" },
+    { name = "djangorestframework", specifier = "==3.17.1" },
+    { name = "gunicorn", specifier = "==23.0.0" },
+    { name = "hashids", specifier = "==1.3.1" },
+    { name = "hiredis", specifier = "==3.4.0" },
+    { name = "pika", specifier = "==1.4.1" },
+    { name = "pillow", specifier = "==12.2.0" },
+    { name = "psycopg", specifier = "==3.3.4" },
+    { name = "psycopg-binary", specifier = "==3.3.4" },
+    { name = "pyjwt", specifier = "==2.13.0" },
+    { name = "python-dotenv", specifier = "==1.1.0" },
+    { name = "redis", specifier = "==8.0.0" },
+    { name = "sqlparse", specifier = "==0.5.5" },
+    { name = "typing-extensions", specifier = "==4.15.0" },
+    { name = "tzdata", specifier = "==2026.2" },
 ]
 
 [[package]]
@@ -79,6 +89,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ca/d7/c016e69fac19ff8afdc89db9d31d9ae43ae031e4d1993b20aca179b8301a/djangorestframework-3.17.1.tar.gz", hash = "sha256:a6def5f447fe78ff853bff1d47a3c59bf38f5434b031780b351b0c73a62db1a5", size = 905742, upload-time = "2026-03-24T16:58:33.705Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5a/e1/2c516bdc83652b1a60c6119366ac2c0607b479ed05cd6093f916ca8928f8/djangorestframework-3.17.1-py3-none-any.whl", hash = "sha256:c3c74dd3e83a5a3efc37b3c18d92bd6f86a6791c7b7d4dff62bb068500e76457", size = 898844, upload-time = "2026-03-24T16:58:31.845Z" },
+]
+
+[[package]]
+name = "gunicorn"
+version = "23.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/34/72/9614c465dc206155d93eff0ca20d42e1e35afc533971379482de953521a4/gunicorn-23.0.0.tar.gz", hash = "sha256:f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec", size = 375031, upload-time = "2024-08-10T20:25:27.378Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cb/7d/6dac2a6e1eba33ee43f318edbed4ff29151a49b5d37f080aad1e6469bca4/gunicorn-23.0.0-py3-none-any.whl", hash = "sha256:ec400d38950de4dfd418cff8328b2c8faed0edb0d517d3394e457c317908ca4d", size = 85029, upload-time = "2024-08-10T20:25:24.996Z" },
 ]
 
 [[package]]
@@ -152,6 +174,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/15/af/3f26324cca720f56ace408883c1c7311ce71b571e82e6434515f7ba4eb59/hiredis-3.4.0-cp314-cp314t-win32.whl", hash = "sha256:decc176d86127c620b5d280b3fe5f97a788be58ca945971f3852c3bf54f4d5ad", size = 40516, upload-time = "2026-06-03T16:23:13.179Z" },
     { url = "https://files.pythonhosted.org/packages/8b/18/e011a424a9608ff152ebeb7bbae2be3163e5716e92cf75baddcb5a8fc312/hiredis-3.4.0-cp314-cp314t-win_amd64.whl", hash = "sha256:05c852c58fec65d4c9fb861372dd7391d8b2ce96c960ba8714145f8cd85cd0ec", size = 41453, upload-time = "2026-06-03T16:23:14.091Z" },
     { url = "https://files.pythonhosted.org/packages/43/5f/829287555ce7286be8d6c87c69f93aa1f38fe67c46740806416142231cf3/hiredis-3.4.0-cp314-cp314t-win_arm64.whl", hash = "sha256:7ff29c9f5d3c91fda948c2fde58f457b3244550781d3bc0891b1b9d93c10f47f", size = 37968, upload-time = "2026-06-03T16:23:14.948Z" },
+]
+
+[[package]]
+name = "packaging"
+version = "26.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/f1/e7a6dd94a8d4a5626c03e4e99c87f241ba9e350cd9e6d75123f992427270/packaging-26.2.tar.gz", hash = "sha256:ff452ff5a3e828ce110190feff1178bb1f2ea2281fa2075aadb987c2fb221661", size = 228134, upload-time = "2026-04-24T20:15:23.917Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/df/b2/87e62e8c3e2f4b32e5fe99e0b86d576da1312593b39f47d8ceef365e95ed/packaging-26.2-py3-none-any.whl", hash = "sha256:5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e", size = 100195, upload-time = "2026-04-24T20:15:22.081Z" },
 ]
 
 [[package]]
@@ -292,6 +323,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/3b/81/58d0ac84e1ef3a3843791d6954d94c0b33d526c75eeb1efbce9d0a4c4077/pyjwt-2.13.0.tar.gz", hash = "sha256:41571c89ca91598c79e8ef18a2d07367d4810fbbd6f637794879baf1b7703423", size = 107515, upload-time = "2026-05-21T19:54:36.618Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a3/5e/ecf12fdb62546d64385c158514e9b2b671f7832108ef2ecd2020ce0af2d1/pyjwt-2.13.0-py3-none-any.whl", hash = "sha256:66adcc2aff09b3f1bbd95fc1e1577df8ac8723c978552fd43304c8a290ac5728", size = 31274, upload-time = "2026-05-21T19:54:35.362Z" },
+]
+
+[[package]]
+name = "python-dotenv"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/88/2c/7bb1416c5620485aa793f2de31d3df393d3686aa8a8506d11e10e13c5baf/python_dotenv-1.1.0.tar.gz", hash = "sha256:41f90bc6f5f177fb41f53e87666db362025010eb28f60a01c9143bfa33a2b2d5", size = 39920, upload-time = "2025-03-25T10:14:56.835Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1e/18/98a99ad95133c6a6e2005fe89faedf294a748bd5dc803008059409ac9b1e/python_dotenv-1.1.0-py3-none-any.whl", hash = "sha256:d7c01d9e2293916c18baf562d95698754b0dbbb5e74d457c45d4f6561fb9d55d", size = 20256, upload-time = "2025-03-25T10:14:55.034Z" },
 ]
 
 [[package]]
