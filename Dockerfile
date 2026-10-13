@@ -1,4 +1,4 @@
-FROM python:3.12-slim AS base
+FROM python:3.11-slim AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
@@ -11,8 +11,9 @@ RUN apt-get update && \
 
 FROM base AS deps
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt gunicorn
+COPY pyproject.toml .
+RUN pip install --no-cache-dir .
+RUN pip install gunicorn
 
 FROM deps AS runtime
 
