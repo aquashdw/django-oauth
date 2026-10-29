@@ -69,10 +69,14 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_oauth.context_processors.environment_variables',
             ],
         },
     },
 ]
+
+# Environment variables listed here are available to templates by name.
+TEMPLATE_ENVIRONMENT_VARIABLES = ['DOS_SERVICE_TITLE',]
 
 WSGI_APPLICATION = 'django_oauth.wsgi.application'
 
