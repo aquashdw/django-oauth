@@ -9,5 +9,5 @@ class OAuthTokenRequestSerializer(serializers.Serializer):
 
     def validate_grant_type(self, value):
         if value != 'code':
-            raise serializers.ValidationError('invalid grand type')
+            raise serializers.ValidationError('invalid grant type')
         return value
